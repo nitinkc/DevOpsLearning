@@ -1,0 +1,52 @@
+site_name: DevOps Learning Labs
+site_description: Comprehensive DevOps learning path from Docker to Kubernetes, Helm, and Flux
+theme:
+  name: journal
+
+markdown_extensions:
+  - admonition
+  - pymdownx.inlinehilite
+  - pymdownx.highlight:
+      use_pygments: false
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_div_format
+  - pymdownx.details
+
+plugins:
+  - search
+
+extra_javascript:
+  - https://unpkg.com/mermaid@10.9.0/dist/mermaid.min.js
+  - js/mermaid-init.js
+
+nav:
+  - Home: index.md
+  - Setup Guide: setup.md
+  - Theory:
+    - 01 DevOps Fundamentals: theory/01-devops-fundamentals.md
+    - 02 Containerization & Docker: theory/02-containerization-docker.md
+    - 03 Kubernetes Fundamentals: theory/03-kubernetes-fundamentals.md
+    - 04 Workloads & Deployments: theory/04-workloads-and-deployments.md
+    - 05 Networking & Storage: theory/05-networking-and-storage.md
+    - "06 Helm: Package Management": theory/06-package-management-helm.md
+    - 07 GitOps & Flux: theory/07-gitops-and-flux.md
+    - 08 Observability: theory/08-observability.md
+    - 09 Advanced Patterns: theory/09-advanced-patterns.md
+  - Labs:
+    - Labs Overview: labs-overview.md
+    - 00 Environment Setup: labs/00-environment-setup.md
+    - 01 Docker Basics: labs/01-docker-basics.md
+    - 02 Kubernetes Pods: labs/02-kubernetes-pods.md
+    - 03 Deployments & Replicas: labs/03-deployments-and-replicas.md
+    - 04 Services & Discovery: labs/04-services-and-discovery.md
+    - 05 ConfigMaps & Secrets: labs/05-configmaps-and-secrets.md
+    - 06 Helm Charts: labs/06-helm-charts.md
+    - 07 Multi-Region Setup: labs/07-multi-region-setup.md
+    - 08 Sidecars & Networking: labs/08-sidecars-and-networking.md
+    - 09 Flux GitOps: labs/09-flux-gitops.md
+    - 10 Observability: labs/10-observability-monitoring.md
+    - 11 Troubleshooting: labs/11-troubleshooting.md
+  - Interview Prep: interview-prep.md
