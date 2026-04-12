@@ -3,6 +3,7 @@
 ## Definition
 
 **Kubernetes (K8s)** = Orchestration platform for:
+
 - Deploying containers at scale
 - Managing networking between containers
 - Persisting data
@@ -80,6 +81,7 @@ graph TB
 ### **1. Pod (Smallest Unit)**
 
 A **Pod** = 1+ containers (usually 1) that share:
+
 - Network namespace (share IP, can communicate via localhost)
 - Storage volumes
 - Configuration
@@ -126,6 +128,7 @@ spec:
 ```
 
 Kubernetes automatically:
+
 - Creates 3 pods
 - Restarts if any crashes
 - Updates all pods if image version changes
@@ -150,6 +153,7 @@ spec:
 ```
 
 Types:
+
 - **ClusterIP**: Internal communication only
 - **NodePort**: Expose on each node's port
 - **LoadBalancer**: Cloud load balancer
@@ -170,6 +174,7 @@ kubectl get pods -n production
 ```
 
 Common namespaces:
+
 - `default` — Default namespace for testing
 - `kube-system` — Kubernetes system components
 - `production` — Production apps
@@ -388,4 +393,4 @@ A: **Liveness** = restart if unhealthy. **Readiness** = remove from load balance
 ## Next Steps
 
 - **Read**: [Theory 04: Workloads & Deployments](04-workloads-and-deployments.md)
-- **Do**: [Lab 02: Kubernetes Pods](../../labs/02-kubernetes-pods.md)
+- **Do**: [Lab 02: Kubernetes Pods](../labs/02-kubernetes-pods.md)

@@ -103,6 +103,7 @@ kubectl rollout undo deployment/api-server --to-revision=2
 ## StatefulSets (Stateful Apps)
 
 For applications that need:
+
 - Stable, unique network identity (pod-0, pod-1, pod-2)
 - Persistent storage
 - Ordered startup/shutdown
@@ -184,6 +185,7 @@ spec:
 ```
 
 **Use cases:**
+
 - Logging agent (fluentd, logstash, filebeat)
 - Monitoring agent (prometheus node exporter)
 - Network plugin (CNI)
@@ -266,6 +268,7 @@ spec:
 ```
 
 **Flow:**
+
 1. Start init container (wait-for-db)
 2. If init completes successfully → start main container
 3. If init fails → restart pod

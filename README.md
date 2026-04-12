@@ -66,34 +66,6 @@ cat docs/labs/01-docker-basics.md
 
 ---
 
-## 📋 Project Structure
-
-```
-├── docs/
-│   ├── theory/              # 9 comprehensive theory modules
-│   ├── labs/                # 12 progressive lab exercises
-│   ├── index.md             # Home page
-│   ├── setup.md             # Installation guide
-│   ├── interview-prep.md    # Interview preparation
-│   └── interview-questions.md # Self-assessment Q&A
-│
-├── labs/                    # Lab scripts and exercises
-├── minikube-setup/          # Cluster setup scripts
-├── sample-app/              # Sample microservices
-│   ├── api-server/          # Flask REST API
-│   └── database-sidecar/    # Example sidecar
-│
-├── sample-app/config/
-│   ├── k8s-manifests/       # Raw Kubernetes YAML
-│   └── helm-charts/         # Helm charts
-│
-├── flux-config/             # GitOps configuration
-├── monitoring/              # Observability configs
-└── mkdocs.yml               # Documentation config
-```
-
----
-
 ## 📚 Learning Path (Standard Track: 1-2 weeks)
 
 ### Phase 1: Containerization (2 hrs)

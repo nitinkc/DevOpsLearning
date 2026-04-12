@@ -3,6 +3,7 @@
 ## Definition
 
 **Container** = A lightweight, isolated package containing:
+
 - Application code
 - Dependencies (libraries, runtime)
 - Configuration files
@@ -23,13 +24,12 @@ With Docker:
   → Works identically everywhere (laptop, server, cloud)
 ```
 
----
 
 ## Docker Architecture
 
 <div class="mermaid">
 graph TB
-    A["Dockerfile<br/>(instructions)"] -->|docker build| B["Docker Image<br/>(blueprint)")
+    A["Dockerfile<br/>(instructions)"] -->|docker build| B["Docker Image<br/>(blueprint)"]
     B -->|docker run| C["Docker Container<br/>(running instance)"]
     B -->|docker push| D["Container Registry<br/>(Docker Hub, ghcr.io, ECR)"]
     D -->|docker pull| E["Deployed Container<br/>(production)"]
@@ -43,21 +43,19 @@ graph TB
 
 ### **Key Terms**
 
-| Term | Definition | Analogy |
-|------|-----------|---------|
-| **Image** | Blueprint for container (immutable) | Class definition |
-| **Container** | Running instance of image | Object instance |
-| **Registry** | Central storage for images | Package repository |
-| **Dockerfile** | Instructions to build image | Recipe |
-| **Layer** | Cached step in image build | Snapshot |
-
----
+| Term           | Definition                          | Analogy            |
+|:---------------|:------------------------------------|:-------------------|
+| **Image**      | Blueprint for container (immutable) | Class definition   |
+| **Container**  | Running instance of image           | Object instance    |
+| **Registry**   | Central storage for images          | Package repository |
+| **Dockerfile** | Instructions to build image         | Recipe             |
+| **Layer**      | Cached step in image build          | Snapshot           |
 
 ## Dockerfile Best Practices
 
 ### **Basic Dockerfile Structure**
 
-```dockerfile
+```docker
 # Base image (includes OS + runtime)
 FROM python:3.11-slim
 
@@ -89,19 +87,19 @@ CMD ["python", "app.py"]
 #### **1. Use Specific Base Image Versions**
 
 ❌ **Bad:**
-```dockerfile
+```docker
 FROM python:latest  # Could break anytime
 ```
 
 ✅ **Good:**
-```dockerfile
+```docker
 FROM python:3.11.4-slim-bookworm  # Reproducible
 ```
 
 #### **2. Multi-Stage Builds (Reduce Image Size)**
 
 ❌ **Bad:**
-```dockerfile
+```docker
 FROM golang:1.20  # 1GB - includes build tools
 COPY . .
 RUN go build -o app
@@ -110,7 +108,7 @@ CMD ["./app"]
 ```
 
 ✅ **Good:**
-```dockerfile
+```docker
 # Build stage
 FROM golang:1.20 AS builder
 COPY . .
@@ -126,7 +124,7 @@ CMD ["./app"]
 #### **3. Minimize Layers**
 
 ❌ **Bad:**
-```dockerfile
+```docker
 RUN apt-get update
 RUN apt-get install -y curl
 RUN apt-get install -y wget
@@ -134,7 +132,7 @@ RUN apt-get install -y wget
 ```
 
 ✅ **Good:**
-```dockerfile
+```docker
 RUN apt-get update && apt-get install -y curl wget
 # Single layer
 ```
@@ -153,14 +151,14 @@ node_modules/
 #### **5. Run as Non-Root User**
 
 ❌ **Bad:**
-```dockerfile
+```docker
 RUN pip install -r requirements.txt
 CMD ["python", "app.py"]
 # Runs as root (security risk)
 ```
 
 ✅ **Good:**
-```dockerfile
+```docker
 RUN useradd -m appuser
 USER appuser
 RUN pip install -r requirements.txt
@@ -336,13 +334,14 @@ graph LR
     style H fill:#f5f5f5
 </div>
 
+
 ---
 
 ## Common Patterns
 
 ### **Pattern 1: Application Config**
 
-```dockerfile
+```docker
 # Get config from environment or files
 FROM python:3.11
 WORKDIR /app
@@ -359,7 +358,7 @@ CMD ["python", "app.py"]
 
 ### **Pattern 2: Health Checks**
 
-```dockerfile
+```docker
 FROM python:3.11
 WORKDIR /app
 COPY . .
@@ -374,7 +373,7 @@ CMD ["python", "app.py"]
 
 ### **Pattern 3: Init Process**
 
-```dockerfile
+```docker
 FROM python:3.11
 
 # Use init process (handles signals properly)
@@ -390,14 +389,14 @@ CMD ["python", "app.py"]
 
 ### ❌ **Large Image (Bloated Base)**
 
-```dockerfile
+```docker
 FROM ubuntu:22.04  # 77MB
 RUN apt-get update && apt-get install -y python3
 # Image becomes ~800MB
 ```
 
 ✅ **Use slim/alpine images**
-```dockerfile
+```docker
 FROM python:3.11-slim  # 120MB (includes Python)
 # Image becomes ~150MB
 ```
@@ -425,13 +424,13 @@ Kubernetes doesn't know if your app crashed
 
 ### ❌ **Latest Tag**
 
-```dockerfile
+```docker
 FROM node:latest  # Could be 18, 20, or 22
 # Breaks reproducibility
 ```
 
 ✅ Use specific versions
-```dockerfile
+```docker
 FROM node:20.9.0
 ```
 
@@ -502,4 +501,4 @@ A: Environment variables, volumes (config files), or command-line arguments.
 ## Next Steps
 
 - **Read**: [Theory 03: Kubernetes Fundamentals](03-kubernetes-fundamentals.md)
-- **Do**: [Lab 01: Docker Basics](../../labs/01-docker-basics.md) — Build your first image
+- **Do**: [Lab 01: Docker Basics](../labs/01-docker-basics.md) — Build your first image

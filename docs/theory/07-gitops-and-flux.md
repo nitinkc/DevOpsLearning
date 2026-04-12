@@ -21,6 +21,7 @@ GitOps (Pull):
 ```
 
 **Benefits:**
+
 - ✅ Git = audit trail (who changed what, when)
 - ✅ Automatic drift detection (cluster != Git → Flux corrects)
 - ✅ Declarative (desired state in Git)

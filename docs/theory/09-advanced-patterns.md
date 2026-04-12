@@ -3,6 +3,7 @@
 ## Multi-Region Deployments
 
 Deploy Kubernetes across multiple geographic regions for:
+
 - **High availability** — Region failure doesn't affect others
 - **Low latency** — Users served from nearby region
 - **Compliance** — Data residency requirements
@@ -19,6 +20,7 @@ Deploy Kubernetes across multiple geographic regions for:
 ```
 
 *Global LB routes based on:
+
 - Geographic proximity
 - Health checks
 - Session affinity
@@ -143,6 +145,7 @@ spec:
 ```
 
 Envoy intercepts all traffic:
+
 - Rate limiting
 - Circuit breaking
 - Retry logic
@@ -429,4 +432,4 @@ A: **HPA** = scale number of pods (horizontal). **VPA** = adjust resource reques
 
 - **Do**: [Lab 07: Multi-Region Setup](../labs/07-multi-region-setup.md)
 - **Do**: [Lab 08: Sidecars & Networking](../labs/08-sidecars-and-networking.md)
-- **Prepare**: [Interview Questions](../interview-questions.md)
+- **Prepare**: [Interview Questions](../interview-prep.md)

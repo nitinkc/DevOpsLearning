@@ -277,6 +277,7 @@ kubectl create secret generic app-secret \
 
 ```yaml
 env:
+
 - name: DB_PASSWORD
   valueFrom:
     secretKeyRef:
@@ -350,11 +351,13 @@ spec:
 ```
 
 Both containers share:
+
 - Network namespace (same IP)
 - Storage volumes
 - Can communicate via localhost
 
 **Use cases:**
+
 - Logging sidecar (collects and forwards logs)
 - Metrics sidecar (exposes metrics)
 - Security sidecar (encryption proxy)

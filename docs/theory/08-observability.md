@@ -7,6 +7,7 @@
 Numeric measurements over time.
 
 **Examples:**
+
 - CPU usage: 75%
 - Memory: 512MB / 1GB
 - Request latency: 45ms
@@ -73,6 +74,7 @@ global:
   evaluation_interval: 15s
 
 scrape_configs:
+
 - job_name: 'kubernetes-pods'
   kubernetes_sd_configs:
   - role: pod
@@ -131,6 +133,7 @@ Panel 3: Request Latency           Panel 4: Error Rate
 
 ```yaml
 groups:
+
 - name: api_alerts
   rules:
   - alert: HighCPUUsage
@@ -170,6 +173,7 @@ clients:
   - url: http://loki:3100/loki/api/v1/push
 
 scrape_configs:
+
 - job_name: kubernetes
   kubernetes_sd_configs:
   - role: pod

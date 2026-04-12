@@ -1,0 +1,41 @@
+/* ── Table styling ────────────────────────────────────────────────────────── */
+/* Apply Bootstrap table classes via CSS so every markdown table is styled
+   consistently without relying on JavaScript class injection.             */
+
+.col-md-9 table,
+.container table {
+  width: 100%;
+  margin-bottom: 1rem;
+  color: #222;
+  border-collapse: collapse;
+}
+
+.col-md-9 table th,
+.col-md-9 table td,
+.container table th,
+.container table td {
+  padding: 0.75rem;
+  vertical-align: top;
+  border-top: 1px solid #dee2e6;
+}
+
+.col-md-9 table thead th,
+.container table thead th {
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+  background-color: #f8f9fa;
+  font-weight: 700;
+}
+
+/* Striped rows */
+.col-md-9 table tbody tr:nth-of-type(odd),
+.container table tbody tr:nth-of-type(odd) {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Hover rows */
+.col-md-9 table tbody tr:hover,
+.container table tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.075);
+}
+

@@ -7,6 +7,7 @@ Welcome to **DevOps Learning Labs** — a comprehensive, structured learning jou
 A **practical, open-source, teachable** learning environment that takes you from Docker basics all the way through **multi-region Kubernetes deployments with GitOps automation**, observability, and advanced patterns.
 
 **Perfect for:**
+
 - 📚 **Self-learners** wanting a structured DevOps path
 - 👥 **Team onboarding** programs
 - 🏫 **Training instructors** looking for comprehensive, repeatable labs
@@ -104,7 +105,7 @@ By completing this project, you'll understand:
 ## 🎓 Interview & Self-Assessment
 
 - 📄 **[Interview Prep](interview-prep.md)**: Key concepts for DevOps interviews
-- ❓ **[Interview Questions](interview-questions.md)**: Q&A for self-study and validation
+- ❓ **[Interview Questions](interview-prep.md)**: Q&A for self-study and validation
 
 ## 🔗 Resources & References
 
@@ -137,6 +138,7 @@ By completing this project, you'll understand:
 ## 🤝 Contributing
 
 Found an issue? Have an improvement? Feel free to:
+
 - Update theory modules for clarity
 - Add new lab exercises
 - Improve setup scripts
@@ -152,7 +154,7 @@ This project is open-source and available for educational and personal use.
 
 **First Time?** → Start with [Setup Guide](setup.md)  
 **Want Theory?** → Read [Theory Modules](theory/01-devops-fundamentals.md)  
-**Ready to Code?** → Jump to [Lab 00](../labs/00-environment-setup.md)  
+**Ready to Code?** → Jump to [Lab 00](labs/00-environment-setup.md)  
 **Preparing for Interview?** → Check [Interview Prep](interview-prep.md)  
 
 ---

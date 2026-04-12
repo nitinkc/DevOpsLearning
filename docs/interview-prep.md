@@ -19,6 +19,7 @@ A: Pod is single/multiple containers (ephemeral). Deployment manages multiple po
 **Q: How do you debug a CrashLoopBackOff pod?**
 
 A:
+
 - `kubectl logs pod-name` — Check application logs
 - `kubectl describe pod pod-name` — See events and exit code
 - `kubectl get events` — Check cluster events
@@ -71,6 +72,7 @@ A: Yes, revert Git commit. Flux detects change and automatically rolls back clus
 **Q: Explain Service types: ClusterIP, NodePort, LoadBalancer**
 
 A:
+
 - ClusterIP: Internal only, DNS-discoverable
 - NodePort: Expose on every node's port
 - LoadBalancer: Cloud provider LB (external IP)
@@ -82,6 +84,7 @@ A: Ingress is more efficient (single LB for all services) and supports hostname/
 **Q: How do you debug network connectivity between pods?**
 
 A:
+
 - `kubectl exec -it pod -- sh` — Enter pod
 - `wget http://service-name` — Test DNS
 - `netstat -tlnp` — Check listening ports
@@ -106,6 +109,7 @@ A: Metrics (what), Logs (why), Traces (how).
 **Q: How do you query Prometheus metrics?**
 
 A:
+
 - `node_memory_MemFree_bytes` — Free memory
 - `rate(container_cpu_usage_seconds_total[5m])` — CPU rate
 - `histogram_quantile(0.95, request_duration_seconds_bucket)` — p95 latency
@@ -113,6 +117,7 @@ A:
 **Q: What alerts would you set up for an API?**
 
 A:
+
 - High error rate (> 1%)
 - High latency (p95 > threshold)
 - Pod restarts (frequent crashes)
@@ -145,6 +150,7 @@ A: Restrict pod-to-pod communication. Default = all traffic allowed. Define rule
 **Q: How do you prevent pods from running as root?**
 
 A:
+
 - Pod SecurityContext: `runAsNonRoot: true`
 - Pod SecurityPolicy: enforce across namespace
 - RBAC: restrict what pods can do
@@ -154,6 +160,7 @@ A:
 **Q: Pod stuck in Pending state?**
 
 A:
+
 - `kubectl describe pod` — Check for scheduling errors
 - `kubectl top nodes` — Check node resources
 - Image pull failure? — Verify image exists in registry
@@ -161,6 +168,7 @@ A:
 **Q: Service endpoints not populating?**
 
 A:
+
 - Pods have correct labels? — Match service selector
 - Pods running and healthy? — Check `kubectl get pods`
 - Correct ports? — Match containerPort with service port
@@ -168,6 +176,7 @@ A:
 **Q: High latency or timeouts?**
 
 A:
+
 - Network policies blocking? — Check netpol rules
 - Resource limits exceeded? — Check CPU/memory
 - Application issue? — Check logs, traces
@@ -179,11 +188,13 @@ A:
 ### **Format 1: Technical Deep-Dive**
 
 Interviewer asks about specific experience:
+
 - "Tell me about a time you debugged a production issue"
 - "How did you handle a database migration?"
 - "Describe your CI/CD pipeline"
 
 **Answer Strategy:**
+
 - STAR method (Situation, Task, Action, Result)
 - Show problem-solving process
 - Mention monitoring, alerts, rollback
@@ -194,6 +205,7 @@ Interviewer asks about specific experience:
 "Design deployment for high-traffic e-commerce site"
 
 **Answer includes:**
+
 - Multi-region setup for HA
 - Caching layer (Redis)
 - Database replication
@@ -207,6 +219,7 @@ Interviewer asks about specific experience:
 "You deploy an update, traffic drops 50%. What do you do?"
 
 **Answer includes:**
+
 1. Immediate: Rollback (Helm: `rollback`, GitOps: revert commit)
 2. Investigate: Check logs, metrics, recent changes
 3. Communicate: Alert team, update status page
@@ -219,6 +232,7 @@ Interviewer asks about specific experience:
 ### **Hands-On Lab** (~1-2 hours)
 
 Common scenarios:
+
 - Deploy app to Kubernetes
 - Fix broken YAML manifests
 - Implement scaling policy
@@ -227,6 +241,7 @@ Common scenarios:
 - Set up monitoring
 
 **Preparation:**
+
 - Practice all labs multiple times
 - Hands-on with your own cluster
 - Be comfortable with kubectl commands
@@ -235,6 +250,7 @@ Common scenarios:
 ### **Take-Home Assignment**
 
 Common tasks:
+
 - Design K8s manifests for app
 - Create Helm chart
 - Write CI/CD pipeline
@@ -242,6 +258,7 @@ Common tasks:
 - Set up monitoring
 
 **Tips:**
+
 - Clean, readable YAML (proper formatting)
 - Meaningful labels and naming
 - Production-ready (resource limits, health checks, etc.)
@@ -336,6 +353,7 @@ You can have one image and run 100 containers from it.
 <summary>Answer</summary>
 
 Builds a Docker image from a Dockerfile. Process:
+
 1. Reads Dockerfile instructions
 2. Creates layers (for caching)
 3. Stores image locally
@@ -351,6 +369,7 @@ Output: Docker image (tagged, e.g., myapp:1.0.0)
 Each command in Dockerfile = one layer. Docker caches layers.
 
 Example:
+
 - Layer 1: FROM python:3.11 (200MB, cached)
 - Layer 2: COPY requirements.txt (1MB, cached)
 - Layer 3: RUN pip install (cached)
@@ -370,6 +389,7 @@ Example:
 Smallest unit in Kubernetes. Can contain 1+ containers (usually 1).
 
 Containers in a pod:
+
 - Share network namespace (same IP)
 - Share storage volumes
 - Can communicate via localhost
@@ -386,6 +406,7 @@ Pods are ephemeral (transient). Don't create directly; use Deployments.
 **Deployment**: Describes desired state (manage 1+ pods)
 
 Deployment handles:
+
 - Replication (run N copies)
 - Restarting crashed pods
 - Rolling updates
@@ -422,6 +443,7 @@ If resource removed from manifest → deleted next time
 3. **LoadBalancer**: Cloud provider load balancer. Assigns external IP.
 
 **When to use**:
+
 - ClusterIP: Pod-to-pod communication
 - NodePort: External access without cloud LB
 - LoadBalancer: Production external access
@@ -441,6 +463,7 @@ If resource removed from manifest → deleted next time
 Helm = "package manager for Kubernetes"
 
 Solves:
+
 - **Duplication**: Templating (values parameterize manifests)
 - **Versioning**: Release management
 - **Dependencies**: Chart dependencies
@@ -492,6 +515,7 @@ Each file overrides defaults in values.yaml.
 | **DaemonSet** | Node-level (logging) | One per node, always |
 
 **When to use**:
+
 - Deployment: 99% of apps
 - StatefulSet: PostgreSQL, MongoDB, Redis
 - DaemonSet: Filebeat, node exporter, CNI
@@ -625,6 +649,7 @@ v1    v1/v2  v1/v2  v2
 ```
 
 At each step:
+
 - Monitor error rate, latency
 - If issues → rollback
 - If healthy → continue
@@ -652,6 +677,7 @@ Global Load Balancer (Routes by geography/health)
 ```
 
 Considerations:
+
 - **Data**: Replicate database, ensure consistency
 - **Networking**: Cross-region latency, cost
 - **Failover**: Automatic traffic reroute
@@ -667,6 +693,7 @@ Considerations:
 **Sidecar** = additional container in pod (shares network, storage)
 
 **Use cases**:
+
 1. **Logging**: Pod writes logs, sidecar ships to Loki
 2. **Metrics**: Sidecar exposes metrics endpoint
 3. **Network proxy**: Envoy intercepts traffic (encryption, rate limit, retries)
@@ -748,11 +775,13 @@ spec:
 <summary>Answer</summary>
 
 **Immediate** (1-2 min):
+
 1. Rollback recent deployment: `helm rollback` or git revert
 2. Alert team, update status page
 3. Monitor error rate
 
 **Investigate** (parallel):
+
 1. Metrics: Check CPU, memory, network saturation
 2. Logs: Filter errors, check timestamps
 3. Traces: See which service failing
@@ -760,6 +789,7 @@ spec:
 5. Network: DNS, connectivity, policies
 
 **Root cause** (post-incident):
+
 - Post-mortem meeting
 - Identify systemic cause (not just symptom)
 - Add monitoring/alerting to prevent
@@ -778,6 +808,7 @@ spec:
 **Error budget**: If SLO=99.9%, you can tolerate 0.1% errors.
 
 **Why**: 
+
 - SLOs drive reliability decisions
 - Error budget prevents "always live" culture
 - Balances speed and reliability
@@ -792,6 +823,7 @@ spec:
 Design K8s + Helm setup for an API serving 10M requests/day
 
 **Expected answer covers**:
+
 - Deployment (3+ replicas, health checks)
 - HPA (auto-scale on CPU/memory)
 - Service (ClusterIP, internal)
@@ -807,6 +839,7 @@ Design K8s + Helm setup for an API serving 10M requests/day
 Production database is consuming 90% CPU. Users report slow queries.
 
 **Answer should**:
+
 - Identify root cause (query, missing index, traffic spike)
 - Immediate mitigation (scale up, rate limit)
 - Fix (optimize query, add index)
@@ -818,6 +851,7 @@ Production database is consuming 90% CPU. Users report slow queries.
 K8s bill increased 3x. How do you reduce?
 
 **Solutions**:
+
 - Right-size resource requests/limits
 - Use HPA instead of static scaling
 - Spot instances for non-critical workloads
@@ -832,17 +866,20 @@ K8s bill increased 3x. How do you reduce?
 ### How to Use These Questions
 
 **Self-Assessment**:
+
 - Tier 1 (Fundamentals): Should answer 90%+ fluently
 - Tier 2 (Intermediate): Should answer 70%+ with some thought
 - Tier 3 (Advanced): Should answer 50%+ (these are hard)
 
 **Interview Prep**:
+
 - Practice answering without looking up answers
 - Time yourself (1-2 min per question)
 - Record yourself explaining concepts
 - Discuss with peers
 
 **Success Metrics**:
+
 - Tier 1: Mastery (can teach others)
 - Tier 2: Competency (comfortable in mid-level role)
 - Tier 3: Depth (ready for senior role)

@@ -5,6 +5,7 @@
 **Helm** = Package manager for Kubernetes (like apt, brew for K8s).
 
 Think of it as:
+
 - **Templating**: Parameterize K8s manifests
 - **Packaging**: Bundle manifests + values + dependencies
 - **Versioning**: Track releases, easy rollback
@@ -129,6 +130,7 @@ spec:
 ```
 
 **Variables available:**
+
 - `{{ .Release.Name }}` — Release name (from `helm install`)
 - `{{ .Chart.Name }}` — Chart name
 - `{{ .Chart.Version }}` — Chart version
@@ -205,6 +207,7 @@ helm uninstall my-app
 ```yaml
 # Chart.yaml
 dependencies:
+
 - name: postgres
   version: "14.x"
   repository: https://charts.bitnami.com/bitnami
@@ -262,6 +265,7 @@ spec:
 ```
 
 **Hook Types:**
+
 - `pre-install` — Before install
 - `post-install` — After install
 - `pre-upgrade` — Before upgrade

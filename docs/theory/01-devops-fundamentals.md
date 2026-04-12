@@ -3,6 +3,7 @@
 ## Definition
 
 **DevOps** = **Development + Operations**, a philosophy and set of practices that bridges developers (who build features) and operations (who run systems), aiming to:
+
 - Faster, reliable software delivery
 - Shared responsibility for quality
 - Continuous improvement through automation
@@ -25,6 +26,7 @@ Traditional Setup:
 ```
 
 DevOps approach:
+
 ```
 DevOps Mindset:
   Developers ↔ Operations
@@ -38,13 +40,14 @@ DevOps Mindset:
 
 ### **2. Key Principles (CALMS)**
 
-| Principle | Meaning | Example |
-|-----------|---------|---------|
-| **C**ulture | Shared responsibility, collaboration | Dev + Ops work together, no blame |
-| **A**utomation | Remove manual, repetitive work | CI/CD pipelines, infrastructure as code |
-| **L**ean | Eliminate waste, focus on value | Small batches, fast feedback |
-| **M**easurement | Data-driven decisions | Metrics, dashboards, alerting |
-| **S**haring | Transparency, knowledge sharing | Runbooks, documentation, postmortems |
+| Principle       | Meaning                              | Example                                 |
+|:----------------|:-------------------------------------|:----------------------------------------|
+| **C**ulture     | Shared responsibility, collaboration | Dev + Ops work together, no blame       |
+| **A**utomation  | Remove manual, repetitive work       | CI/CD pipelines, infrastructure as code |
+| **L**ean        | Eliminate waste, focus on value      | Small batches, fast feedback            |
+| **M**easurement | Data-driven decisions                | Metrics, dashboards, alerting           |
+| **S**haring     | Transparency, knowledge sharing      | Runbooks, documentation, postmortems    |
+
 
 ## The DevOps Value Stream
 
@@ -86,6 +89,7 @@ resource "kubernetes" "cluster" {
 ```
 
 **Benefits:**
+
 - ✅ Version controlled (Git history)
 - ✅ Reproducible (same every time)
 - ✅ Testable (validate before apply)
@@ -94,6 +98,7 @@ resource "kubernetes" "cluster" {
 ### **2. Continuous Integration (CI)**
 
 **Definition:** Every code commit is automatically:
+
 1. Built
 2. Tested
 3. Analyzed for quality
@@ -112,6 +117,7 @@ If any fail: alert developer
 ```
 
 **Benefits:**
+
 - 🔍 Catch bugs early
 - 📊 Consistent build quality
 - ✅ Automated quality gates
@@ -137,6 +143,7 @@ Deploy to Production (Continuous Deployment)
 ### **4. Monitoring & Observability**
 
 **What to measure:**
+
 - **Metrics**: CPU, memory, request latency, error rate
 - **Logs**: Application and system events
 - **Traces**: Request path through microservices
@@ -157,6 +164,7 @@ Slack/PagerDuty (notifies team)
 ### **5. Incident Response & Postmortems**
 
 **When things break:**
+
 1. **Alert** → Team gets notified
 2. **Respond** → Mitigate impact immediately
 3. **Investigate** → Find root cause
@@ -285,14 +293,17 @@ Blaming individuals when things break
 ## Interview Questions
 
 **Q: What's the difference between DevOps and SRE?**
+
 - **DevOps** is a culture/practice of shared responsibility
 - **SRE** (Site Reliability Engineering) is a specific job role that operationalizes DevOps with focus on reliability metrics (SLOs, error budgets)
 
 **Q: Why is immutable infrastructure important?**
+
 - Immutable = once deployed, never changed (always redeploy)
 - Benefits: Consistent state, easier rollbacks, less drift
 
 **Q: What's the difference between CI and CD?**
+
 - **CI** (Continuous Integration) = build + test every commit
 - **CD** (Continuous Delivery) = always ready to deploy (manual approval possible)
 - **CD** (Continuous Deployment) = automatically deployed to production
@@ -313,7 +324,7 @@ Blaming individuals when things break
 ## Next Steps
 
 - **Read**: [Theory 02: Containerization](02-containerization-docker.md) — Learn how Docker enables DevOps
-- **Do**: [Lab 00: Environment Setup](../../labs/00-environment-setup.md) — Get your tools ready
+- **Do**: [Lab 00: Environment Setup](../labs/00-environment-setup.md) — Get your tools ready
 - **Explore**: Your organization's DevOps practices (Slack, builds, deployments)
 
 ---
