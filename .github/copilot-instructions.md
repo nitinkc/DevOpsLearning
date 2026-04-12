@@ -6,47 +6,15 @@
 - **Documentation**: MkDocs with 9 theory modules, 12 hands-on labs, interview prep
 - **Target Audience**: Self-learners, team onboarding, training instructors, career changers
 
-### Key Project Structure
-```
-├── docs/
-│   ├── index.md                           # Home page
-│   ├── setup.md                           # Installation guide
-│   ├── labs-overview.md                   # Lab objectives
-│   ├── theory/                            # 9 theory modules
-│   │   ├── 01-devops-fundamentals.md
-│   │   ├── 02-containerization-docker.md
-│   │   ├── 03-kubernetes-fundamentals.md
-│   │   ├── 04-workloads-and-deployments.md
-│   │   ├── 05-networking-and-storage.md
-│   │   ├── 06-package-management-helm.md
-│   │   ├── 07-gitops-and-flux.md
-│   │   ├── 08-observability.md
-│   │   └── 09-advanced-patterns.md
-│   └── labs/                              # 12 lab exercises
-│       ├── 00_environment_setup.md
-│       ├── 01_docker_basics.md
-│       ├── 02_kubernetes_pods.md
-│       └── ... (plus 09 more)
-├── docs/
-│   ├── interview-prep.md                  # Interview preparation guide
-│   └── interview-questions.md             # Q&A for self-assessment
-├── minikube-setup/
-│   ├── setup-east-cluster.sh              # Minikube cluster
-│   ├── setup-west-cluster.sh              # kind cluster
-│   ├── setup-networking.sh                # Inter-cluster networking
-│   └── teardown.sh                        # Cleanup script
-├── sample-app/
-│   ├── api-server/                        # Flask REST API
-│   │   ├── Dockerfile
-│   │   ├── app.py
-│   │   └── requirements.txt
-│   ├── config/k8s-manifests/              # Raw K8s YAML examples
-│   └── config/helm-charts/                # Helm chart examples
-├── flux-config/                           # GitOps examples
-├── monitoring/                            # Observability configs
-├── mkdocs.yml                             # Documentation config
-└── README.md                              # Project overview
-```
+### Project Structure
+
+**Simple organization:**
+- **docs/**: All documentation (theory modules, labs, interview prep, setup guides)
+- **labs/**: Lab exercise files
+- **minikube-setup/**: Cluster setup scripts
+- **sample-app/**: Example Flask API with Dockerfile, K8s manifests, Helm charts
+- **flux-config/**: GitOps configuration examples
+- **monitoring/**: Observability stack configurations
 
 ### Theory Modules — What Each Covers
 
@@ -158,11 +126,70 @@ Each theory module includes:
 Code → Docker image → Helm chart → Flux (GitOps sync)
 ```
 
-#### **Interview Prep**
-- Theory modules provide concept depth
-- Labs provide hands-on experience
-- Interview Q&A for self-assessment
-- Scenarios for architecture thinking
+#### **Interview Prep** (Tier-Based Learning Path)
+
+**Tier 1 (Junior Level) - Fundamentals**
+- Container Basics: Docker images, Dockerfile layers, caching, multi-stage builds
+- Kubernetes Core: Pods, Deployments, control plane components, kubectl
+- Kubernetes Networking: Service types (ClusterIP, NodePort, LoadBalancer)
+- Troubleshooting Basics: Debugging CrashLoopBackOff and common pod issues
+
+**Tier 2 (Mid-Level) - Intermediate**
+- Advanced Workloads: Deployment vs. StatefulSet vs. DaemonSet, rolling updates
+- Storage & Configuration: PV/PVC, ConfigMaps, Secrets
+- Package Management: Helm concepts, install vs. upgrade, environment management
+- Observability: Three pillars (metrics, logs, traces), debugging latency
+
+**Tier 3 (Senior Level) - Advanced**
+- GitOps & Strategies: Flux vs. Jenkins, multi-cluster GitOps, canary deployments
+- Architecture: Multi-region design, sidecars and network proxies
+- Security: Secret management (K8s, Sealed Secrets, Vault), Network Policies, zero-trust
+- Operations: Incident response, SLA/SLO/SLI, reliability patterns
+
+**Practical Scenarios**
+- Design questions: High-traffic API deployment architecture
+- Incident response: Production troubleshooting and root cause analysis
+- Cost optimization: Kubernetes bill reduction strategies
+
+### Markdown & Documentation Standards
+
+#### **List Formatting (Critical)**
+
+**Always add a blank line before starting a list:**
+
+✅ CORRECT:
+```markdown
+This is a paragraph.
+
+- Item 1
+- Item 2
+- Item 3
+```
+
+❌ WRONG:
+```markdown
+This is a paragraph.
+- Item 1
+- Item 2
+- Item 3
+```
+
+**Guidelines:**
+- Lists must be preceded by a blank line
+- Use consistent bullet style (- or *)
+- Nested lists need proper indentation (2-4 spaces)
+- Numbered lists: Use 1. for first item, then continue with numbers
+- Mixed lists: Combine bullets/numbers with proper indentation
+
+#### **Markdown Best Practices**
+
+- **Headings**: Use # for H1, ## for H2, ### for H3 (no H1 for subsections)
+- **Bold**: Use `**text**` for emphasis
+- **Code**: Use backticks for inline code, triple backticks for blocks
+- **Tables**: Proper alignment with pipes and dashes
+- **Details/Collapsible**: Use `<details><summary>` for Q&A answers
+- **Links**: Use `[text](url)` format
+- **Line breaks**: One blank line between sections, two for major sections
 
 ### Coding Standards & Practices
 
@@ -286,7 +313,11 @@ mkdocs build
 - **K8s architecture?** → See [Theory 03](docs/theory/03-kubernetes-fundamentals.md)
 - **Helm templates?** → See [Theory 06](docs/theory/06-package-management-helm.md)
 - **Troubleshooting?** → See [Lab 11](docs/labs/11-troubleshooting.md)
-- **Interview prep?** → See [Interview Questions](docs/interview-questions.md)
+- **Interview prep (Tier 1-3)?** → See [Interview Preparation Guide](docs/interview-prep.md)
+- **Specific tier topics?** → See headings in interview-prep.md:
+  - Tier 1: Container Basics, K8s Core, Networking, Troubleshooting
+  - Tier 2: Advanced Workloads, Storage & Configuration, Helm, Observability
+  - Tier 3: GitOps, Multi-Region, Security, Operations & Reliability
 
 ### Teaching & Extensibility
 
@@ -312,4 +343,5 @@ mkdocs build
 ---
 
 ### Update History
+- **v1.1** (April 11, 2026): Reorganized interview prep with systematic 3-tier structure (Tier 1-3), added markdown formatting standards, improved list handling guidelines
 - **v1.0** (April 2026): Initial release with 9 theory modules, 12 labs, multi-cluster setup, observability stack, interview materials
