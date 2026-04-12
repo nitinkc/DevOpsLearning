@@ -1,7 +1,7 @@
-site_name: DevOps Learning Labs
+site_name: DevOps Learning
 site_description: Comprehensive DevOps learning path from Docker to Kubernetes, Helm, and Flux
 theme:
-  name: journal
+  name: mkdocs
 
 markdown_extensions:
   - admonition
@@ -53,3 +53,4 @@ nav:
     - 10 Observability: labs/10-observability-monitoring.md
     - 11 Troubleshooting: labs/11-troubleshooting.md
   - Interview Prep: interview-prep.md
+  - Git: https://github.com/nitinkc/DevOpsLearning
