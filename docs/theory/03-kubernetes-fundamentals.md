@@ -57,6 +57,10 @@ graph TB
 
 ### **Key Components**
 
+![](https://kubernetes.io/images/docs/kubernetes-cluster-architecture.svg)
+
+![podVsContainer.png](../assets/podVsContainer.png))
+
 #### **Control Plane**
 
 | Component | Role |

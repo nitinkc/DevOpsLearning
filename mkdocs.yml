@@ -2,6 +2,10 @@ site_name: DevOps Learning
 site_description: Comprehensive DevOps learning path from Docker to Kubernetes, Helm, and Flux
 theme:
   name: mkdocs
+  highlightjs: true
+  hljs_languages:
+    - yaml
+    - rust
 
 markdown_extensions:
   - admonition
