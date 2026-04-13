@@ -57,6 +57,8 @@ graph TB
 
 ### **Key Components**
 
+![](https://www.couchbase.com/blog/wp-content/uploads/2024/07/image1-2.png)
+
 ![](https://kubernetes.io/images/docs/kubernetes-cluster-architecture.svg)
 
 ![podVsContainer.png](../assets/podVsContainer.png))
