@@ -2,6 +2,12 @@
 
 Welcome to **DevOps Learning Labs** — a comprehensive, structured learning journey through the entire DevOps and Kubernetes ecosystem.
 
+# DevOps Games
+[https://devops.games/](https://devops.games/)
+
+# K8s Games
+[https://k8sgames.com/](https://k8sgames.com/)
+
 ## 🎯 What This Project Is
 
 A **practical, open-source, teachable** learning environment that takes you from Docker basics all the way through **multi-region Kubernetes deployments with GitOps automation**, observability, and advanced patterns.
