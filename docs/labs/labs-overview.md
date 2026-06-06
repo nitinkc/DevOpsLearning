@@ -2,24 +2,6 @@
 
 This page provides an overview of all 12 lab exercises in the standard learning track. Each lab builds on previous knowledge and includes hands-on, step-by-step instructions.
 
-## Lab Progression Map
-
-
-```mermaid
-graph LR
-    A["Lab 00<br/>Environment Setup"] --> B["Lab 01<br/>Docker Basics"]
-    B --> C["Lab 02<br/>K8s Pods"]
-    C --> D["Lab 03<br/>Deployments"]
-    D --> E["Lab 04<br/>Services"]
-    E --> F["Lab 05<br/>ConfigMaps/Secrets"]
-    F --> G["Lab 06<br/>Helm Charts"]
-    G --> H["Lab 07<br/>Multi-Region"]
-    H --> I["Lab 08<br/>Sidecars"]
-    I --> J["Lab 09<br/>Flux GitOps"]
-    J --> K["Lab 10<br/>Observability"]
-    K --> L["Lab 11<br/>Troubleshooting"]
-```
-
 ## Lab Summary Table
 
 | Lab | Name | Duration | Key Topics | Prerequisites |
@@ -50,10 +32,11 @@ graph LR
 - Test local Kubernetes access
 
 **Expected outcome:** 
+
 ```bash
-$ kubectl cluster-info
-Kubernetes control plane is running at https://127.0.0.1:62xxx
-CoreDNS is running at https://127.0.0.1:62xxx
+kubectl cluster-info
+# Kubernetes control plane is running at https://127.0.0.1:62xxx
+# CoreDNS is running at https://127.0.0.1:62xxx
 
 ```
 
@@ -384,6 +367,6 @@ If you get stuck:
 
 Ready to get started?
 
-1. **[Lab 00: Environment Setup](labs/00-environment-setup.md)** ← Start here
-2. **[Theory 01: DevOps Fundamentals](theory/01-devops-fundamentals.md)** ← Read first
-3. **[Lab 01: Docker Basics](labs/01-docker-basics.md)** ← Then do this
+1. **[Lab 00: Environment Setup](00-environment-setup.md)** ← Start here
+2. **[Theory 01: DevOps Fundamentals](../theory/01-devops-fundamentals.md)** ← Read first
+3. **[Lab 01: Docker Basics](01-docker-basics.md)** ← Then do this

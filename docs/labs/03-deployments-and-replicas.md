@@ -173,7 +173,7 @@ Implement HPA (Horizontal Pod Autoscaler):
 
 # Apply the commands to create the HPA and monitor it:
 
-```shell
+```bash
 kubectl apply -f api-hpa.yaml
 kubectl get hpa
 kubectl describe hpa api-hpa

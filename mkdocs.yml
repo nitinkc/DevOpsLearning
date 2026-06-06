@@ -59,9 +59,11 @@ markdown_extensions:
   - pymdownx.highlight:
       anchor_linenums: true
       use_pygments: true
+      guess_lang: true
       line_spans: __span
       pygments_lang_class: true
   - pymdownx.inlinehilite
+  - pymdownx.snippets
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
@@ -84,8 +86,6 @@ markdown_extensions:
       base_path: docs
   - tables
 
-extra_css:
-  - css/custom.css
 
 extra_javascript:
   - https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js
@@ -104,7 +104,7 @@ nav:
     - 08 Observability: theory/08-observability.md
     - 09 Advanced Patterns: theory/09-advanced-patterns.md
   - Labs:
-    - Labs Overview: labs-overview.md
+    - Labs Overview: labs/labs-overview.md
     - 00 Environment Setup: labs/00-environment-setup.md
     - 01 Docker Basics: labs/01-docker-basics.md
     - 02 Kubernetes Pods: labs/02-kubernetes-pods.md
