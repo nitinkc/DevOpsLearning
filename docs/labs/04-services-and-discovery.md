@@ -15,7 +15,7 @@
 
 ## Step 1: Create ClusterIP Service
 
-??? note "YAML example"
+??? note "api-service.yaml"
 
     ```yaml
     apiVersion: v1
@@ -64,7 +64,7 @@ exit  # Exit test pod
 
 ## Step 3: Create NodePort Service
 
-??? note "YAML example"
+??? note "api-nodeport.yaml"
 
     ```yaml
     apiVersion: v1
@@ -148,7 +148,7 @@ kubectl run test --image=curlimages/curl --rm -it -- curl http://api-service
 
 Create LoadBalancer service:
 
-??? note "YAML example"
+??? note "api-lb.yaml"
 
     ```yaml
     apiVersion: v1
