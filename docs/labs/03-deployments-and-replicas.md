@@ -148,7 +148,7 @@ kubectl describe pod <any-pod-name> | grep -A3 "Liveness\|Readiness"
 
 Implement HPA (Horizontal Pod Autoscaler):
 
-??? note "YAML example"
+??? note "api-hpa.yaml"
 
     ```yaml
     apiVersion: autoscaling/v2
