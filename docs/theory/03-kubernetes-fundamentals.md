@@ -12,6 +12,7 @@
 
 ### **Why Kubernetes?**
 
+
 ```
 Without Kubernetes:
   - 100 containers across 50 servers
@@ -29,7 +30,8 @@ With Kubernetes:
 
 ## Kubernetes Architecture
 
-<div class="mermaid">
+
+```mermaid
 graph TB
     A["Kubernetes Cluster"]
     A --> B["Control Plane<br/>(Brain)"]
@@ -47,13 +49,7 @@ graph TB
     C1 --> C1A["Pod 1"]
     C1 --> C1B["Pod 2"]
     C2 --> C2A["Pod 3"]
-    
-    style A fill:#e3f2fd
-    style B fill:#f3e5f5
-    style C fill:#e8f5e9
-    style B1 fill:#fff3e0
-    style B2 fill:#fff3e0
-</div>
+```
 
 ### **Key Components**
 
@@ -92,18 +88,20 @@ A **Pod** = 1+ containers (usually 1) that share:
 - Storage volumes
 - Configuration
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: my-pod
-spec:
-  containers:
-  - name: api
-    image: myapp:1.0.0
-    ports:
-    - containerPort: 5000
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: my-pod
+    spec:
+      containers:
+      - name: api
+        image: myapp:1.0.0
+        ports:
+        - containerPort: 5000
+    ```
 
 **Key insight:** Pods are ephemeral. Don't create pods directly; use Deployments instead.
 
@@ -111,27 +109,29 @@ spec:
 
 A **Deployment** = Describes desired state of pods.
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: api-deployment
-spec:
-  replicas: 3  # Run 3 copies
-  selector:
-    matchLabels:
-      app: api
-  template:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
     metadata:
-      labels:
-        app: api
+      name: api-deployment
     spec:
-      containers:
-      - name: api
-        image: myapp:1.0.0
-        ports:
-        - containerPort: 5000
-```
+      replicas: 3  # Run 3 copies
+      selector:
+        matchLabels:
+          app: api
+      template:
+        metadata:
+          labels:
+            app: api
+        spec:
+          containers:
+          - name: api
+            image: myapp:1.0.0
+            ports:
+            - containerPort: 5000
+    ```
 
 Kubernetes automatically:
 
@@ -144,19 +144,21 @@ Kubernetes automatically:
 
 Pods are ephemeral (can be destroyed). **Service** = stable endpoint for accessing pods.
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-service
-spec:
-  selector:
-    app: api  # Route to pods with this label
-  ports:
-  - port: 80
-    targetPort: 5000
-  type: ClusterIP  # Internal only (or NodePort, LoadBalancer)
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: api-service
+    spec:
+      selector:
+        app: api  # Route to pods with this label
+      ports:
+      - port: 80
+        targetPort: 5000
+      type: ClusterIP  # Internal only (or NodePort, LoadBalancer)
+    ```
 
 Types:
 
@@ -177,6 +179,7 @@ kubectl apply -f deployment.yaml -n production
 
 # List resources in namespace
 kubectl get pods -n production
+
 ```
 
 Common namespaces:
@@ -190,7 +193,7 @@ Common namespaces:
 
 Labels = key-value metadata. Selectors = queries on labels.
 
-```yaml
+```
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -219,20 +222,15 @@ kubectl get pods -l app=api,version=v1
 
 ## Pod Lifecycle
 
-<div class="mermaid">
+```mermaid
 graph LR
     A["Pending<br/>(scheduling)"] --> B["Running<br/>(executing)"]
     B -->|success| C["Succeeded"]
     B -->|failure| D["Failed"]
     D --> E["CrashLoopBackOff<br/>(restart loop)"]
     E --> B
-    
-    style A fill:#fff3e0
-    style B fill:#c8e6c9
-    style C fill:#a5d6a7
-    style D fill:#ffccbc
-    style E fill:#ffab91
-</div>
+
+```
 
 **Pending**: Waiting to be scheduled or pulling image  
 **Running**: Container is running  
@@ -267,7 +265,7 @@ graph LR
 
 Checks if container should be restarted.
 
-```yaml
+```
 apiVersion: v1
 kind: Pod
 metadata:
@@ -304,19 +302,21 @@ If not ready → Service stops routing traffic to this pod.
 
 ### **Resource Requests & Limits**
 
-```yaml
-spec:
-  containers:
-  - name: api
-    image: myapp:1.0.0
-    resources:
-      requests:
-        memory: "256Mi"   # Need at least 256MB
-        cpu: "100m"       # Need at least 0.1 cores
-      limits:
-        memory: "512Mi"   # Max 512MB
-        cpu: "500m"       # Max 0.5 cores
-```
+??? note "YAML example"
+
+    ```yaml
+    spec:
+      containers:
+      - name: api
+        image: myapp:1.0.0
+        resources:
+          requests:
+            memory: "256Mi"   # Need at least 256MB
+            cpu: "100m"       # Need at least 0.1 cores
+          limits:
+            memory: "512Mi"   # Max 512MB
+            cpu: "500m"       # Max 0.5 cores
+    ```
 
 **Requests**: K8s uses to schedule pod (must fit on node)  
 **Limits**: Container can't exceed this

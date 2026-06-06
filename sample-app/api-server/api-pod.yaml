@@ -1,0 +1,32 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: api-pod
+  labels:
+    app: api
+    environment: dev
+spec:
+  containers:
+  - name: api
+    image: nitinkc/myapp:1.0.0  # Your image
+    ports:
+    - containerPort: 5000
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+    livenessProbe:
+      httpGet:
+        path: /health
+        port: 5000
+      initialDelaySeconds: 10
+      periodSeconds: 5
+    readinessProbe:
+      httpGet:
+        path: /ready
+        port: 5000
+      initialDelaySeconds: 5
+      periodSeconds: 10

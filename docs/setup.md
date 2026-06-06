@@ -135,6 +135,7 @@ curl -s https://fluxcd.io/install.sh | sudo bash
 Most systems have Git pre-installed:
 ```bash
 git --version
+
 ```
 
 ## Cluster Setup Scripts — Detailed
@@ -148,7 +149,7 @@ Creates a **Minikube cluster** named "east":
 - 4 CPUs, 6GB RAM, 1 control-plane node, Docker driver
 - Creates `production` and `monitoring` namespaces
 
-```bash
+```
 # Delete existing cluster if present
 minikube delete -p east || true
 
@@ -169,6 +170,7 @@ kubectl create namespace monitoring --context=east || true
 # Verify
 kubectl cluster-info --context=east
 kubectl get nodes --context=east
+
 ```
 
 **Use case**: Fast, lightweight single-node cluster for initial learning.
@@ -182,7 +184,7 @@ Creates a **kind cluster** named "west":
 - 3 nodes (1 control-plane, 2 workers), runs in Docker containers
 - Creates `production` and `monitoring` namespaces
 
-```bash
+```
 # Delete existing cluster if present
 kind delete cluster --name west || true
 
@@ -326,6 +328,7 @@ minikube dashboard -p east
 
 # This opens: http://127.0.0.1:XXXXX
 # Shows: Pods, Deployments, Services, Namespaces, Events
+
 ```
 
 **What you'll see**:
@@ -340,7 +343,7 @@ minikube dashboard -p east
 
 Expose Kubernetes UI on your local machine:
 
-```bash
+```
 # Port-forward the dashboard service (east cluster)
 kubectl port-forward -n kube-system svc/kubernetes-dashboard 8443:443 --context=east
 
@@ -483,6 +486,7 @@ Monitor Docker containers visually:
 ```bash
 # Open Docker Desktop (already installed)
 # Go to: Containers tab
+
 ```
 
 **See**:
@@ -499,7 +503,7 @@ Monitor Docker containers visually:
 For pushing images to a registry:
 
 ### **Using Docker Hub**
-```bash
+```
 # Create free account at https://hub.docker.com
 
 # Login locally

@@ -18,51 +18,53 @@ Different K8s resources for different workload types:
 
 **Deployment** = manage stateless application replicas.
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: api-server
-spec:
-  replicas: 3
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1        # Max extra pod during update
-      maxUnavailable: 0  # Min pods available (zero downtime)
-  selector:
-    matchLabels:
-      app: api-server
-  template:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
     metadata:
-      labels:
-        app: api-server
+      name: api-server
     spec:
-      containers:
-      - name: api
-        image: myapp:1.0.0
-        ports:
-        - containerPort: 5000
-        livenessProbe:
-          httpGet:
-            path: /alive
-            port: 5000
-          initialDelaySeconds: 10
-          periodSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 5000
-          initialDelaySeconds: 5
-          periodSeconds: 10
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-```
+      replicas: 3
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1        # Max extra pod during update
+          maxUnavailable: 0  # Min pods available (zero downtime)
+      selector:
+        matchLabels:
+          app: api-server
+      template:
+        metadata:
+          labels:
+            app: api-server
+        spec:
+          containers:
+          - name: api
+            image: myapp:1.0.0
+            ports:
+            - containerPort: 5000
+            livenessProbe:
+              httpGet:
+                path: /alive
+                port: 5000
+              initialDelaySeconds: 10
+              periodSeconds: 5
+            readinessProbe:
+              httpGet:
+                path: /ready
+                port: 5000
+              initialDelaySeconds: 5
+              periodSeconds: 10
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "100m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
+    ```
 
 ### **Rolling Updates**
 
@@ -96,6 +98,7 @@ Result: Zero downtime deployment
 kubectl rollout history deployment/api-server
 kubectl rollout undo deployment/api-server  # Back to previous
 kubectl rollout undo deployment/api-server --to-revision=2
+
 ```
 
 ---
@@ -108,7 +111,7 @@ For applications that need:
 - Persistent storage
 - Ordered startup/shutdown
 
-```yaml
+```
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
@@ -140,6 +143,7 @@ spec:
       resources:
         requests:
           storage: 10Gi
+
 ```
 
 ### **Key Differences**
@@ -158,7 +162,7 @@ spec:
 
 Run a pod on **every node** in cluster.
 
-```yaml
+```
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
@@ -182,6 +186,7 @@ spec:
       - name: logs
         hostPath:
           path: /var/log
+
 ```
 
 **Use cases:**
@@ -198,7 +203,7 @@ spec:
 
 Run task to completion (don't restart).
 
-```yaml
+```
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -223,27 +228,29 @@ spec:
 
 Schedule job to run periodically.
 
-```yaml
-apiVersion: batch/v1
-kind: CronJob
-metadata:
-  name: nightly-backup
-spec:
-  schedule: "0 2 * * *"  # 2 AM every day
-  jobTemplate:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: batch/v1
+    kind: CronJob
+    metadata:
+      name: nightly-backup
     spec:
-      template:
+      schedule: "0 2 * * *"  # 2 AM every day
+      jobTemplate:
         spec:
-          containers:
-          - name: backup
-            image: myapp:1.0.0
-            command:
-            - /bin/sh
-            - -c
-            - |
-              mysqldump -u root -p$MYSQL_PASSWORD mydb > /backup/db.sql
-          restartPolicy: OnFailure
-```
+          template:
+            spec:
+              containers:
+              - name: backup
+                image: myapp:1.0.0
+                command:
+                - /bin/sh
+                - -c
+                - |
+                  mysqldump -u root -p$MYSQL_PASSWORD mydb > /backup/db.sql
+              restartPolicy: OnFailure
+    ```
 
 ---
 
@@ -251,21 +258,23 @@ spec:
 
 Run setup containers **before** main application container.
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: myapp
-spec:
-  initContainers:
-  - name: wait-for-db
-    image: busybox
-    command: ['sh', '-c', "until nc -z postgres 5432; do echo waiting for DB; sleep 2; done"]
-  
-  containers:
-  - name: app
-    image: myapp:1.0.0
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: myapp
+    spec:
+      initContainers:
+      - name: wait-for-db
+        image: busybox
+        command: ['sh', '-c', "until nc -z postgres 5432; do echo waiting for DB; sleep 2; done"]
+      
+      containers:
+      - name: app
+        image: myapp:1.0.0
+    ```
 
 **Flow:**
 
@@ -307,6 +316,7 @@ replicas: 1  # If pod crashes, app is down!
 
 ```yaml
 replicas: 3  # Pods protect against failure
+
 ```
 
 ### ❌ **No Health Checks**
@@ -323,7 +333,7 @@ Pods can consume all node resources
 
 ### ❌ **Creating Pods Directly**
 
-```bash
+```
 kubectl run myapp --image=myapp:1.0.0  # Direct pod, no management
 ```
 

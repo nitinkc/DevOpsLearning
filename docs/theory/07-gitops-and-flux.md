@@ -4,6 +4,7 @@
 
 **GitOps** = Managing infrastructure through Git as the single source of truth.
 
+
 ```
 Traditional (Push):
   Jenkins runs: helm upgrade my-app ./chart
@@ -31,15 +32,12 @@ GitOps (Pull):
 
 ## Flux Architecture
 
-<div class="mermaid">
+```mermaid
 graph LR
     A["GitHub<br/>(source of truth)"] -->|polling<br/>every 1 min| B["Flux Controller<br/>(in cluster)"]
     B -->|reconcile| C["Kubernetes Cluster"]
-    
-    style A fill:#e3f2fd
-    style B fill:#f3e5f5
-    style C fill:#e8f5e9
-</div>
+
+```
 
 ### **Components**
 
@@ -54,7 +52,7 @@ graph LR
 
 ## Setting Up Flux
 
-```bash
+```
 # Install Flux CLI
 brew install fluxcd/tap/flux
 
@@ -84,42 +82,44 @@ myapp-config/ (GitHub repo)
 
 Tell Flux which Helm chart to deploy.
 
-```yaml
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: api-server
-  namespace: production
-spec:
-  interval: 5m  # Check Git every 5 minutes
-  releaseName: api-server  # Helm release name
-  
-  chart:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: helm.toolkit.fluxcd.io/v2beta1
+    kind: HelmRelease
+    metadata:
+      name: api-server
+      namespace: production
     spec:
-      chart: microservices
-      version: "1.2.3"  # Specific version
-      sourceRef:
-        kind: HelmRepository
-        name: myrepo
-  
-  values:
-    replicaCount: 3
-    image:
-      tag: "1.0.0"
-    autoscaling:
-      enabled: true
-      maxReplicas: 10
-  
-  postRenderers:  # Post-process before applying
-  - kustomize:
-      patchesStrategicMerge:
-      - apiVersion: v1
-        kind: Service
-        metadata:
-          name: api-server
+      interval: 5m  # Check Git every 5 minutes
+      releaseName: api-server  # Helm release name
+      
+      chart:
         spec:
-          type: LoadBalancer
-```
+          chart: microservices
+          version: "1.2.3"  # Specific version
+          sourceRef:
+            kind: HelmRepository
+            name: myrepo
+      
+      values:
+        replicaCount: 3
+        image:
+          tag: "1.0.0"
+        autoscaling:
+          enabled: true
+          maxReplicas: 10
+      
+      postRenderers:  # Post-process before applying
+      - kustomize:
+          patchesStrategicMerge:
+          - apiVersion: v1
+            kind: Service
+            metadata:
+              name: api-server
+            spec:
+              type: LoadBalancer
+    ```
 
 ---
 
@@ -127,20 +127,22 @@ spec:
 
 Tell Flux where to fetch configs from.
 
-```yaml
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: GitRepository
-metadata:
-  name: my-app-config
-  namespace: flux-system
-spec:
-  interval: 1m
-  url: https://github.com/yourname/myapp-config
-  ref:
-    branch: main
-  secretRef:  # SSH key to access private repo
-    name: flux-github-deploy-key
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: source.toolkit.fluxcd.io/v1beta2
+    kind: GitRepository
+    metadata:
+      name: my-app-config
+      namespace: flux-system
+    spec:
+      interval: 1m
+      url: https://github.com/yourname/myapp-config
+      ref:
+        branch: main
+      secretRef:  # SSH key to access private repo
+        name: flux-github-deploy-key
+    ```
 
 ---
 
@@ -148,24 +150,27 @@ spec:
 
 Tell Flux where to find Helm charts.
 
-```yaml
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
-metadata:
-  name: myrepo-charts
-  namespace: flux-system
-spec:
-  interval: 5m
-  url: https://charts.example.com
-  secretRef:
-    name: helm-repo-creds  # If auth required
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: source.toolkit.fluxcd.io/v1beta2
+    kind: HelmRepository
+    metadata:
+      name: myrepo-charts
+      namespace: flux-system
+    spec:
+      interval: 5m
+      url: https://charts.example.com
+      secretRef:
+        name: helm-repo-creds  # If auth required
+    ```
 
 ---
 
 ## Drift Detection
 
 If something manually changes the cluster (kubectl edit, etc.), Flux detects and corrects it.
+
 
 ```
 Step 1: Intentional cluster change
@@ -185,6 +190,7 @@ Step 3: Flux corrects it
 ## Multi-Cluster GitOps
 
 Deploy to east AND west clusters from one Git repo:
+
 
 ```
 myapp-config/
@@ -218,21 +224,23 @@ Each cluster reconciles its own directory independently!
 
 Alert when deployments fail or drift occurs.
 
-```yaml
-apiVersion: notification.toolkit.fluxcd.io/v1beta2
-kind: Alert
-metadata:
-  name: deployment-alerts
-  namespace: flux-system
-spec:
-  providerRef:
-    name: slack-webhook
-  suspend: false
-  eventSeverity: error
-  eventSources:
-  - kind: HelmRelease
-    name: '*'
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: notification.toolkit.fluxcd.io/v1beta2
+    kind: Alert
+    metadata:
+      name: deployment-alerts
+      namespace: flux-system
+    spec:
+      providerRef:
+        name: slack-webhook
+      suspend: false
+      eventSeverity: error
+      eventSources:
+      - kind: HelmRelease
+        name: '*'
+    ```
 
 ```yaml
 apiVersion: notification.toolkit.fluxcd.io/v1beta2
@@ -243,6 +251,7 @@ metadata:
 spec:
   type: slack
   address: https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+
 ```
 
 ---
@@ -263,7 +272,7 @@ spec:
 ## Best Practices
 
 ✅ **Keep all config in Git**
-```bash
+```
 # BAD: Manual kubectl apply
 kubectl apply -f manifest.yaml
 

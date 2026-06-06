@@ -19,55 +19,57 @@
 
 Create `api-deployment.yaml`:
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: api-deployment
-  labels:
-    app: api
-spec:
-  replicas: 3
-  strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxSurge: 1        # Max extra pods during update
-      maxUnavailable: 0  # Zero downtime requirement
-  selector:
-    matchLabels:
-      app: api
-  template:
+??? note "api-deployment.yaml"
+
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
     metadata:
+      name: api-deployment
       labels:
         app: api
     spec:
-      containers:
-      - name: api
-        image: YOUR_USERNAME/myapp:1.0.0
-        ports:
-        - containerPort: 5000
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "100m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: 5000
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          failureThreshold: 3
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: 5000
-          initialDelaySeconds: 5
-          periodSeconds: 10
-          failureThreshold: 1
-```
+      replicas: 3
+      strategy:
+        type: RollingUpdate
+        rollingUpdate:
+          maxSurge: 1        # Max extra pods during update
+          maxUnavailable: 0  # Zero downtime requirement
+      selector:
+        matchLabels:
+          app: api
+      template:
+        metadata:
+          labels:
+            app: api
+        spec:
+          containers:
+          - name: api
+            image: YOUR_USERNAME/myapp:1.0.0
+            ports:
+            - containerPort: 5000
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "100m"
+              limits:
+                memory: "512Mi"
+                cpu: "500m"
+            livenessProbe:
+              httpGet:
+                path: /health
+                port: 5000
+              initialDelaySeconds: 10
+              periodSeconds: 5
+              failureThreshold: 3
+            readinessProbe:
+              httpGet:
+                path: /ready
+                port: 5000
+              initialDelaySeconds: 5
+              periodSeconds: 10
+              failureThreshold: 1
+    ```
 
 ## Step 2: Deploy & Verify
 
@@ -75,6 +77,7 @@ spec:
 # Deploy
 kubectl apply -f api-deployment.yaml
 
+# brew install watch
 # Watch replicas being created (in another terminal)
 watch kubectl get pods -l app=api
 
@@ -145,25 +148,35 @@ kubectl describe pod <any-pod-name> | grep -A3 "Liveness\|Readiness"
 
 Implement HPA (Horizontal Pod Autoscaler):
 
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: api-hpa
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: api-deployment
-  minReplicas: 3
-  maxReplicas: 10
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: autoscaling/v2
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: api-hpa
+    spec:
+      scaleTargetRef:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: api-deployment
+      minReplicas: 3
+      maxReplicas: 10
+      metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 70
+    ```
+
+# Apply the commands to create the HPA and monitor it:
+
+```shell
+kubectl apply -f api-hpa.yaml
+kubectl get hpa
+kubectl describe hpa api-hpa
 ```
 
 ## Cleanup

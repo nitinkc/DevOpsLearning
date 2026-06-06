@@ -26,28 +26,30 @@ helm repo update
 
 Create `prometheus-values.yaml`:
 
-```yaml
-prometheus:
-  prometheusSpec:
-    retention: 7d
-    resources:
-      requests:
-        memory: "512Mi"
-        cpu: "250m"
-      limits:
-        memory: "1Gi"
-        cpu: "500m"
-    
-    # Scrape Kubernetes components
-    serviceMonitorSelectorNilUsesHelmValues: false
-    
-grafana:
-  enabled: true
-  adminPassword: admin123
+??? note "prometheus-values.yaml"
 
-alertmanager:
-  enabled: true
-```
+    ```yaml
+    prometheus:
+      prometheusSpec:
+        retention: 7d
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "250m"
+          limits:
+            memory: "1Gi"
+            cpu: "500m"
+        
+        # Scrape Kubernetes components
+        serviceMonitorSelectorNilUsesHelmValues: false
+        
+    grafana:
+      enabled: true
+      adminPassword: admin123
+    
+    alertmanager:
+      enabled: true
+    ```
 
 Install:
 
@@ -90,6 +92,7 @@ curl http://localhost:9090/api/v1/query?query=up
 
 # Query CPU usage
 curl http://localhost:9090/api/v1/query?query=rate\(container_cpu_usage_seconds_total\[5m\]\)
+
 ```
 
 In Grafana:
@@ -104,7 +107,7 @@ In Grafana:
 
 Add Loki repo:
 
-```bash
+```
 helm repo add grafana https://grafana.github.io/helm-charts
 helm repo update
 ```
@@ -119,6 +122,7 @@ helm install loki grafana/loki-stack \
 
 # Verify
 kubectl get pods -n monitoring | grep loki
+
 ```
 
 Add Loki datasource to Grafana:
@@ -138,7 +142,7 @@ Create new dashboard panel:
 
 View logs:
 
-```bash
+```
 # Direct query to Loki
 curl "http://localhost:3100/loki/api/v1/query?query=%7Bnamespace%3D%22default%22%7D"
 ```
@@ -147,38 +151,40 @@ curl "http://localhost:3100/loki/api/v1/query?query=%7Bnamespace%3D%22default%22
 
 Create `alert-rules.yaml`:
 
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: prometheus-alerts
-  namespace: monitoring
-data:
-  alerts.yml: |
-    groups:
-    - name: kubernetes.rules
-      interval: 30s
-      rules:
-      - alert: HighCPUUsage
-        expr: rate(container_cpu_usage_seconds_total[5m]) > 0.8
-        for: 5m
-        annotations:
-          summary: "High CPU usage detected"
-          description: "Pod {{ $labels.pod }} CPU > 80%"
-      
-      - alert: HighMemoryUsage
-        expr: container_memory_usage_bytes / 1073741824 > 0.8
-        for: 5m
-        annotations:
-          summary: "High memory usage"
-          description: "Pod {{ $labels.pod }} memory > 800MB"
-      
-      - alert: PodRestarts
-        expr: increase(kube_pod_container_status_restarts_total[1h]) > 3
-        annotations:
-          summary: "Pod restarting frequently"
-          description: "Pod {{ $labels.pod }} restarted {{ $value }} times in 1h"
-```
+??? note "alert-rules.yaml"
+
+    ```yaml
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: prometheus-alerts
+      namespace: monitoring
+    data:
+      alerts.yml: |
+        groups:
+        - name: kubernetes.rules
+          interval: 30s
+          rules:
+          - alert: HighCPUUsage
+            expr: rate(container_cpu_usage_seconds_total[5m]) > 0.8
+            for: 5m
+            annotations:
+              summary: "High CPU usage detected"
+              description: "Pod {{ $labels.pod }} CPU > 80%"
+          
+          - alert: HighMemoryUsage
+            expr: container_memory_usage_bytes / 1073741824 > 0.8
+            for: 5m
+            annotations:
+              summary: "High memory usage"
+              description: "Pod {{ $labels.pod }} memory > 800MB"
+          
+          - alert: PodRestarts
+            expr: increase(kube_pod_container_status_restarts_total[1h]) > 3
+            annotations:
+              summary: "Pod restarting frequently"
+              description: "Pod {{ $labels.pod }} restarted {{ $value }} times in 1h"
+    ```
 
 Apply:
 
@@ -205,6 +211,7 @@ curl http://localhost:9090/api/v1/query?query=myapp_requests_total
 ## Step 8: Dashboard Best Practices
 
 Create comprehensive dashboard:
+
 
 ```
 Row 1: Infrastructure
@@ -268,6 +275,7 @@ kubectl logs -f -n monitoring deployment/loki
 ## Challenge (Optional)
 
 Implement custom metrics in your app:
+
 
 ```python
 from prometheus_client import Counter, Histogram

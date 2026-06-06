@@ -228,6 +228,7 @@ helm install myapp ./chart -f values-dev.yaml
 
 # Prod: 5 replicas, large resources
 helm install myapp ./chart -f values-prod.yaml
+
 ```
 
 Each file overrides defaults in `values.yaml`.
@@ -304,6 +305,7 @@ Gradually shift traffic to new version:
 0%    10%    50%    100%
 v1    v1/v2  v1/v2  v2
 (5min)(10min)(15min)done
+
 ```
 
 At each step:
@@ -328,6 +330,7 @@ Global Load Balancer (Routes by geography/health)
     └─ West Region (K8s Cluster)
        ├─ Data replicated
        └─ Cache (Redis)
+
 ```
 
 Considerations:
@@ -373,7 +376,7 @@ Considerations:
 
 **Network Policy**: Restrict pod-to-pod communication (like firewall)
 
-```yaml
+```
 # Deny all traffic by default
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy

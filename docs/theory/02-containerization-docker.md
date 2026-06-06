@@ -27,19 +27,14 @@ With Docker:
 
 ## Docker Architecture
 
-<div class="mermaid">
+```mermaid
 graph TB
     A["Dockerfile<br/>(instructions)"] -->|docker build| B["Docker Image<br/>(blueprint)"]
     B -->|docker run| C["Docker Container<br/>(running instance)"]
     B -->|docker push| D["Container Registry<br/>(Docker Hub, ghcr.io, ECR)"]
     D -->|docker pull| E["Deployed Container<br/>(production)"]
-    
-    style A fill:#e3f2fd
-    style B fill:#f3e5f5
-    style C fill:#fff3e0
-    style D fill:#e8f5e9
-    style E fill:#fce4ec
-</div>
+
+```
 
 ### **Key Terms**
 
@@ -55,7 +50,7 @@ graph TB
 
 ### **Basic Dockerfile Structure**
 
-```docker
+```
 # Base image (includes OS + runtime)
 FROM python:3.11-slim
 
@@ -108,6 +103,7 @@ CMD ["./app"]
 ```
 
 ✅ **Good:**
+
 ```docker
 # Build stage
 FROM golang:1.20 AS builder
@@ -280,6 +276,7 @@ docker rmi myapp:1.0.0
 
 ### **Where Images Live**
 
+
 ```
 Docker Hub (docker.io)
   └─ library/ubuntu:22.04
@@ -316,7 +313,8 @@ docker pull ghcr.io/yourname/myapp:1.0.0
 
 ## Container Lifecycle
 
-<div class="mermaid">
+
+```mermaid
 graph LR
     A["docker create"] --> B["Created"]
     B --> C["docker start"]
@@ -327,12 +325,7 @@ graph LR
     F --> G["docker rm"]
     G --> H["Removed"]
     D -->|crash| F
-    
-    style A fill:#e3f2fd
-    style D fill:#c8e6c9
-    style F fill:#ffccbc
-    style H fill:#f5f5f5
-</div>
+```
 
 
 ---
@@ -340,6 +333,7 @@ graph LR
 ## Common Patterns
 
 ### **Pattern 1: Application Config**
+
 
 ```docker
 # Get config from environment or files
@@ -357,6 +351,7 @@ CMD ["python", "app.py"]
 ```
 
 ### **Pattern 2: Health Checks**
+
 
 ```docker
 FROM python:3.11
@@ -440,28 +435,30 @@ FROM node:20.9.0
 
 Running a single container is rare. Usually you need multiple services (API, database, cache):
 
-```yaml
-version: '3.8'
-services:
-  api:
-    build: ./api
-    ports:
-      - "8080:5000"
-    environment:
-      DB_HOST: postgres
-    depends_on:
-      - postgres
-  
-  postgres:
-    image: postgres:15
-    environment:
-      POSTGRES_PASSWORD: secret
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+??? note "YAML example"
 
-volumes:
-  postgres_data:
-```
+    ```yaml
+    version: '3.8'
+    services:
+      api:
+        build: ./api
+        ports:
+          - "8080:5000"
+        environment:
+          DB_HOST: postgres
+        depends_on:
+          - postgres
+      
+      postgres:
+        image: postgres:15
+        environment:
+          POSTGRES_PASSWORD: secret
+        volumes:
+          - postgres_data:/var/lib/postgresql/data
+    
+    volumes:
+      postgres_data:
+    ```
 
 Run all services:
 ```bash

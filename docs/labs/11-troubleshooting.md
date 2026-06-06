@@ -17,29 +17,31 @@
 
 Create broken deployment:
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: broken-pending
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: broken
-  template:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
     metadata:
-      labels:
-        app: broken
+      name: broken-pending
     spec:
-      containers:
-      - name: app
-        image: nonexistent/image:v999
-        resources:
-          requests:
-            memory: "50Gi"  # Impossible to allocate
-            cpu: "100"
-```
+      replicas: 1
+      selector:
+        matchLabels:
+          app: broken
+      template:
+        metadata:
+          labels:
+            app: broken
+        spec:
+          containers:
+          - name: app
+            image: nonexistent/image:v999
+            resources:
+              requests:
+                memory: "50Gi"  # Impossible to allocate
+                cpu: "100"
+    ```
 
 Deploy and diagnose:
 
@@ -75,23 +77,25 @@ watch kubectl get pods -l app=broken
 
 Create app that crashes:
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: crashloop-app
-spec:
-  containers:
-  - name: app
-    image: busybox
-    command:
-    - /bin/sh
-    - -c
-    - |
-      echo "App starting"
-      exit 1  # Immediate exit = crash
-  restartPolicy: Always
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: crashloop-app
+    spec:
+      containers:
+      - name: app
+        image: busybox
+        command:
+        - /bin/sh
+        - -c
+        - |
+          echo "App starting"
+          exit 1  # Immediate exit = crash
+      restartPolicy: Always
+    ```
 
 Deploy and debug:
 
@@ -160,32 +164,34 @@ kubectl patch serviceaccount default \
 
 ## Scenario 4: Service Not Routing Traffic
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: broken-service
-spec:
-  ports:
-  - port: 80
-    targetPort: 5000
-  selector:
-    app: api-wrong-label  # Doesn't match pod
+??? note "YAML example"
 
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: api-pod
-  labels:
-    app: api-correct-label  # Different label
-spec:
-  containers:
-  - name: app
-    image: YOUR_USERNAME/myapp:1.0.0
-    ports:
-    - containerPort: 5000
-```
+    ```yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: broken-service
+    spec:
+      ports:
+      - port: 80
+        targetPort: 5000
+      selector:
+        app: api-wrong-label  # Doesn't match pod
+    
+    ---
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: api-pod
+      labels:
+        app: api-correct-label  # Different label
+    spec:
+      containers:
+      - name: app
+        image: YOUR_USERNAME/myapp:1.0.0
+        ports:
+        - containerPort: 5000
+    ```
 
 Debug:
 
@@ -274,22 +280,24 @@ kubectl set resources deployment stress \
 
 ConfigMap/Secret not found:
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: config-error
-spec:
-  containers:
-  - name: app
-    image: YOUR_USERNAME/myapp:1.0.0
-    env:
-    - name: PASSWORD
-      valueFrom:
-        secretKeyRef:
-          name: db-secret  # Doesn't exist
-          key: password
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: config-error
+    spec:
+      containers:
+      - name: app
+        image: YOUR_USERNAME/myapp:1.0.0
+        env:
+        - name: PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-secret  # Doesn't exist
+              key: password
+    ```
 
 Debug:
 
@@ -393,7 +401,7 @@ kubectl delete svc/broken-service
 **Congratulations!** You've completed all 11 labs and mastered DevOps from Docker to troubleshooting! 🎉
 
 **Next Steps:**
-- Review [Interview Prep](../interview-prep.md)
-- Practice with [Interview Questions](../interview-prep.md)
+- Review [Interview Prep](../docs/interview-prep.md)
+- Practice with [Interview Questions](../docs/interview-questions.md)
 - Build your own multi-cluster deployment
 - Teach these concepts to others

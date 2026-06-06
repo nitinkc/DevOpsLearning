@@ -37,133 +37,141 @@ tree
 
 Edit `Chart.yaml`:
 
-```yaml
-apiVersion: v2
-name: myapp
-description: Sample app for learning Helm
-type: application
-version: 1.0.0
-appVersion: "1.0.0"
-keywords:
-  - microservices
-  - kubernetes
-  - helm
-maintainers:
-  - name: DevOps Team
-    email: devops@example.com
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v2
+    name: myapp
+    description: Sample app for learning Helm
+    type: application
+    version: 1.0.0
+    appVersion: "1.0.0"
+    keywords:
+      - microservices
+      - kubernetes
+      - helm
+    maintainers:
+      - name: DevOps Team
+        email: devops@example.com
+    ```
 
 ## Step 3: Customize values.yaml
 
 Edit `values.yaml`:
 
-```yaml
-replicaCount: 3
+??? note "YAML example"
 
-image:
-  repository: YOUR_USERNAME/myapp
-  tag: "1.0.0"
-  pullPolicy: IfNotPresent
-
-service:
-  type: ClusterIP
-  port: 80
-  targetPort: 5000
-
-ingress:
-  enabled: false
-
-resources:
-  requests:
-    memory: "256Mi"
-    cpu: "100m"
-  limits:
-    memory: "512Mi"
-    cpu: "500m"
-
-autoscaling:
-  enabled: false
-  minReplicas: 3
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 70
-
-config:
-  logLevel: INFO
-  environment: development
-```
+    ```yaml
+    replicaCount: 3
+    
+    image:
+      repository: YOUR_USERNAME/myapp
+      tag: "1.0.0"
+      pullPolicy: IfNotPresent
+    
+    service:
+      type: ClusterIP
+      port: 80
+      targetPort: 5000
+    
+    ingress:
+      enabled: false
+    
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+    
+    autoscaling:
+      enabled: false
+      minReplicas: 3
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 70
+    
+    config:
+      logLevel: INFO
+      environment: development
+    ```
 
 ## Step 4: Template deployment.yaml
 
 Edit `templates/deployment.yaml`:
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{ .Release.Name }}-api
-  labels:
-    app: {{ .Chart.Name }}
-    version: {{ .Chart.Version }}
-spec:
-  replicas: {{ .Values.replicaCount }}
-  selector:
-    matchLabels:
-      app: {{ .Chart.Name }}
-  template:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
     metadata:
+      name: {{ .Release.Name }}-api
       labels:
         app: {{ .Chart.Name }}
+        version: {{ .Chart.Version }}
     spec:
-      containers:
-      - name: api
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        ports:
-        - containerPort: {{ .Values.service.targetPort }}
-        env:
-        - name: LOG_LEVEL
-          value: {{ .Values.config.logLevel }}
-        - name: ENVIRONMENT
-          value: {{ .Values.config.environment }}
-        resources:
-          requests:
-            memory: "{{ .Values.resources.requests.memory }}"
-            cpu: "{{ .Values.resources.requests.cpu }}"
-          limits:
-            memory: "{{ .Values.resources.limits.memory }}"
-            cpu: "{{ .Values.resources.limits.cpu }}"
-        livenessProbe:
-          httpGet:
-            path: /health
-            port: {{ .Values.service.targetPort }}
-          initialDelaySeconds: 10
-          periodSeconds: 5
-        readinessProbe:
-          httpGet:
-            path: /ready
-            port: {{ .Values.service.targetPort }}
-          initialDelaySeconds: 5
-          periodSeconds: 10
-```
+      replicas: {{ .Values.replicaCount }}
+      selector:
+        matchLabels:
+          app: {{ .Chart.Name }}
+      template:
+        metadata:
+          labels:
+            app: {{ .Chart.Name }}
+        spec:
+          containers:
+          - name: api
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            ports:
+            - containerPort: {{ .Values.service.targetPort }}
+            env:
+            - name: LOG_LEVEL
+              value: {{ .Values.config.logLevel }}
+            - name: ENVIRONMENT
+              value: {{ .Values.config.environment }}
+            resources:
+              requests:
+                memory: "{{ .Values.resources.requests.memory }}"
+                cpu: "{{ .Values.resources.requests.cpu }}"
+              limits:
+                memory: "{{ .Values.resources.limits.memory }}"
+                cpu: "{{ .Values.resources.limits.cpu }}"
+            livenessProbe:
+              httpGet:
+                path: /health
+                port: {{ .Values.service.targetPort }}
+              initialDelaySeconds: 10
+              periodSeconds: 5
+            readinessProbe:
+              httpGet:
+                path: /ready
+                port: {{ .Values.service.targetPort }}
+              initialDelaySeconds: 5
+              periodSeconds: 10
+    ```
 
 ## Step 5: Template service.yaml
 
 Edit `templates/service.yaml`:
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: {{ .Release.Name }}-api
-spec:
-  type: {{ .Values.service.type }}
-  selector:
-    app: {{ .Chart.Name }}
-  ports:
-  - protocol: TCP
-    port: {{ .Values.service.port }}
-    targetPort: {{ .Values.service.targetPort }}
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: {{ .Release.Name }}-api
+    spec:
+      type: {{ .Values.service.type }}
+      selector:
+        app: {{ .Chart.Name }}
+      ports:
+      - protocol: TCP
+        port: {{ .Values.service.port }}
+        targetPort: {{ .Values.service.targetPort }}
+    ```
 
 ## Step 6: Template YAML Preview
 
@@ -227,28 +235,30 @@ helm status my-app
 
 Create `values-prod.yaml`:
 
-```yaml
-replicaCount: 10
+??? note "values-prod.yaml"
 
-image:
-  tag: "1.0.0"
-
-resources:
-  requests:
-    memory: "512Mi"
-    cpu: "200m"
-  limits:
-    memory: "1Gi"
-    cpu: "1000m"
-
-autoscaling:
-  enabled: true
-  maxReplicas: 30
-
-config:
-  logLevel: ERROR
-  environment: production
-```
+    ```yaml
+    replicaCount: 10
+    
+    image:
+      tag: "1.0.0"
+    
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "200m"
+      limits:
+        memory: "1Gi"
+        cpu: "1000m"
+    
+    autoscaling:
+      enabled: true
+      maxReplicas: 30
+    
+    config:
+      logLevel: ERROR
+      environment: production
+    ```
 
 Deploy with prod values:
 

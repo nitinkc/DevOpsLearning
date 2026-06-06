@@ -21,40 +21,42 @@
 
 Create `api-pod.yaml`:
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: api-pod
-  labels:
-    app: api
-    environment: dev
-spec:
-  containers:
-  - name: api
-    image: YOUR_USERNAME/myapp:1.0.0  # Your image
-    ports:
-    - containerPort: 5000
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "100m"
-      limits:
-        memory: "512Mi"
-        cpu: "500m"
-    livenessProbe:
-      httpGet:
-        path: /health
-        port: 5000
-      initialDelaySeconds: 10
-      periodSeconds: 5
-    readinessProbe:
-      httpGet:
-        path: /ready
-        port: 5000
-      initialDelaySeconds: 5
-      periodSeconds: 10
-```
+??? note "api-pod.yaml"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: api-pod
+      labels:
+        app: api
+        environment: dev
+    spec:
+      containers:
+      - name: api
+        image: YOUR_USERNAME/myapp:1.0.0  # Your image
+        ports:
+        - containerPort: 5000
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 5000
+          initialDelaySeconds: 5
+          periodSeconds: 10
+    ```
 
 ### Step 2: Deploy Pod
 
@@ -103,6 +105,13 @@ kubectl top pod api-pod
 # Expected output:
 # NAME      CPU(cores)  MEMORY(bytes)
 # api-pod   50m         120Mi
+```
+if any issues
+```bash
+minikube addons enable metrics-server
+kubectl -n kube-system rollout status deployment/metrics-server --timeout=120s
+kubectl get apiservice v1beta1.metrics.k8s.io -o wide
+kubectl top pod api-pod
 ```
 
 ## Validation

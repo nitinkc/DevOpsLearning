@@ -14,6 +14,7 @@ Think of it as:
 
 ## Helm Chart Structure
 
+
 ```
 my-microservices-chart/
 ├── Chart.yaml              # Chart metadata
@@ -33,56 +34,60 @@ my-microservices-chart/
 
 ### **Chart.yaml**
 
-```yaml
-apiVersion: v2
-name: my-microservices
-description: A Helm chart for microservices
-type: application
-version: 1.2.3
-appVersion: "1.0.0"
-keywords:
-  - microservices
-  - api
-maintainers:
-  - name: DevOps Team
-    email: devops@example.com
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v2
+    name: my-microservices
+    description: A Helm chart for microservices
+    type: application
+    version: 1.2.3
+    appVersion: "1.0.0"
+    keywords:
+      - microservices
+      - api
+    maintainers:
+      - name: DevOps Team
+        email: devops@example.com
+    ```
 
 ### **values.yaml (Configuration)**
 
-```yaml
-replicaCount: 3
+??? note "YAML example"
 
-image:
-  repository: myapp
-  tag: "1.0.0"
-  pullPolicy: IfNotPresent
-
-service:
-  type: ClusterIP
-  port: 80
-  targetPort: 5000
-
-ingress:
-  enabled: true
-  host: api.example.com
-  path: /
-  tls: true
-
-resources:
-  requests:
-    memory: "256Mi"
-    cpu: "100m"
-  limits:
-    memory: "512Mi"
-    cpu: "500m"
-
-autoscaling:
-  enabled: true
-  minReplicas: 3
-  maxReplicas: 10
-  targetCPUUtilizationPercentage: 70
-```
+    ```yaml
+    replicaCount: 3
+    
+    image:
+      repository: myapp
+      tag: "1.0.0"
+      pullPolicy: IfNotPresent
+    
+    service:
+      type: ClusterIP
+      port: 80
+      targetPort: 5000
+    
+    ingress:
+      enabled: true
+      host: api.example.com
+      path: /
+      tls: true
+    
+    resources:
+      requests:
+        memory: "256Mi"
+        cpu: "100m"
+      limits:
+        memory: "512Mi"
+        cpu: "500m"
+    
+    autoscaling:
+      enabled: true
+      minReplicas: 3
+      maxReplicas: 10
+      targetCPUUtilizationPercentage: 70
+    ```
 
 ---
 
@@ -90,44 +95,46 @@ autoscaling:
 
 ### **deployment.yaml (Template)**
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: {{ .Release.Name }}-api
-  labels:
-    app: {{ .Chart.Name }}
-    version: {{ .Chart.Version }}
-spec:
-  replicas: {{ .Values.replicaCount }}
-  selector:
-    matchLabels:
-      app: {{ .Chart.Name }}
-  template:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
     metadata:
+      name: {{ .Release.Name }}-api
       labels:
         app: {{ .Chart.Name }}
+        version: {{ .Chart.Version }}
     spec:
-      containers:
-      - name: api
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy }}
-        ports:
-        - containerPort: {{ .Values.service.targetPort }}
-        resources:
-          requests:
-            memory: "{{ .Values.resources.requests.memory }}"
-            cpu: "{{ .Values.resources.requests.cpu }}"
-          limits:
-            memory: "{{ .Values.resources.limits.memory }}"
-            cpu: "{{ .Values.resources.limits.cpu }}"
-        {{- if .Values.livenessProbe }}
-        livenessProbe:
-          httpGet:
-            path: {{ .Values.livenessProbe.path }}
-            port: {{ .Values.service.targetPort }}
-        {{- end }}
-```
+      replicas: {{ .Values.replicaCount }}
+      selector:
+        matchLabels:
+          app: {{ .Chart.Name }}
+      template:
+        metadata:
+          labels:
+            app: {{ .Chart.Name }}
+        spec:
+          containers:
+          - name: api
+            image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+            imagePullPolicy: {{ .Values.image.pullPolicy }}
+            ports:
+            - containerPort: {{ .Values.service.targetPort }}
+            resources:
+              requests:
+                memory: "{{ .Values.resources.requests.memory }}"
+                cpu: "{{ .Values.resources.requests.cpu }}"
+              limits:
+                memory: "{{ .Values.resources.limits.memory }}"
+                cpu: "{{ .Values.resources.limits.cpu }}"
+            {{- if .Values.livenessProbe }}
+            livenessProbe:
+              httpGet:
+                path: {{ .Values.livenessProbe.path }}
+                port: {{ .Values.service.targetPort }}
+            {{- end }}
+    ```
 
 **Variables available:**
 
@@ -138,20 +145,22 @@ spec:
 
 ### **Conditional Logic**
 
-```yaml
-{{- if .Values.ingress.enabled }}
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: {{ .Release.Name }}-ingress
-spec:
-  rules:
-  - host: {{ .Values.ingress.host }}
-    http:
-      paths:
-      - path: {{ .Values.ingress.path }}
-{{- end }}
-```
+??? note "YAML example"
+
+    ```yaml
+    {{- if .Values.ingress.enabled }}
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: {{ .Release.Name }}-ingress
+    spec:
+      rules:
+      - host: {{ .Values.ingress.host }}
+        http:
+          paths:
+          - path: {{ .Values.ingress.path }}
+    {{- end }}
+    ```
 
 ---
 
@@ -204,19 +213,21 @@ helm uninstall my-app
 
 ## Chart Dependencies
 
-```yaml
-# Chart.yaml
-dependencies:
+??? note "YAML example"
 
-- name: postgres
-  version: "14.x"
-  repository: https://charts.bitnami.com/bitnami
-  
-- name: redis
-  version: "18.x"
-  repository: https://charts.bitnami.com/bitnami
-  condition: redis.enabled  # Only install if redis.enabled=true
-```
+    ```yaml
+    # Chart.yaml
+    dependencies:
+    
+    - name: postgres
+      version: "14.x"
+      repository: https://charts.bitnami.com/bitnami
+      
+    - name: redis
+      version: "18.x"
+      repository: https://charts.bitnami.com/bitnami
+      condition: redis.enabled  # Only install if redis.enabled=true
+    ```
 
 **Install dependencies:**
 
@@ -245,24 +256,26 @@ redis:
 
 Run containers at specific points (after install, before upgrade, etc.).
 
-```yaml
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: "{{ .Release.Name }}-db-migration"
-  annotations:
-    "helm.sh/hook": pre-upgrade  # Run before upgrade
-    "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": before-hook-creation
-spec:
-  template:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: batch/v1
+    kind: Job
+    metadata:
+      name: "{{ .Release.Name }}-db-migration"
+      annotations:
+        "helm.sh/hook": pre-upgrade  # Run before upgrade
+        "helm.sh/hook-weight": "-5"
+        "helm.sh/hook-delete-policy": before-hook-creation
     spec:
-      containers:
-      - name: db-migration
-        image: myapp:{{ .Values.image.tag }}
-        command: ["python", "manage.py", "migrate"]
-      restartPolicy: Never
-```
+      template:
+        spec:
+          containers:
+          - name: db-migration
+            image: myapp:{{ .Values.image.tag }}
+            command: ["python", "manage.py", "migrate"]
+          restartPolicy: Never
+    ```
 
 **Hook Types:**
 
@@ -291,23 +304,25 @@ helm install my-app ./chart -f values-prod.yaml
 Each environment file overrides defaults:
 
 **values-prod.yaml:**
-```yaml
-replicaCount: 10  # More replicas
+??? note "YAML example"
 
-image:
-  tag: "1.0.0"
-
-autoscaling:
-  maxReplicas: 30  # Higher max
-
-resources:
-  requests:
-    memory: "512Mi"
-    cpu: "200m"
-  limits:
-    memory: "1Gi"
-    cpu: "1000m"
-```
+    ```yaml
+    replicaCount: 10  # More replicas
+    
+    image:
+      tag: "1.0.0"
+    
+    autoscaling:
+      maxReplicas: 30  # Higher max
+    
+    resources:
+      requests:
+        memory: "512Mi"
+        cpu: "200m"
+      limits:
+        memory: "1Gi"
+        cpu: "1000m"
+    ```
 
 ---
 

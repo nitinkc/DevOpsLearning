@@ -12,7 +12,7 @@
 
 - Docker Desktop or Docker Engine installed
 - ~15 minutes
-- Reference: [Setup Guide](../setup.md)
+- Reference: [Setup Guide](../docs/setup.md)
 
 ## Steps
 

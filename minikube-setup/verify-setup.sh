@@ -40,8 +40,10 @@ check_tool "kubectl" "kubectl version --client" "kubectl"
 # Check Helm
 check_tool "helm" "helm version" "Helm"
 
-# Check Flux
-check_tool "flux" "flux version" "Flux"
+# Check Flux CLI only
+# `flux version` contacts the Kubernetes API server for the current context,
+# which can fail during initial setup before any cluster is started.
+check_tool "flux" "flux version --client" "Flux"
 
 # Check Git
 check_tool "git" "git --version" "Git"

@@ -118,6 +118,7 @@ docker push YOUR_USERNAME/myapp:1.0.0
 
 Build with multi-stage to reduce image size:
 
+
 ```dockerfile
 # Build stage
 FROM python:3.11 AS builder

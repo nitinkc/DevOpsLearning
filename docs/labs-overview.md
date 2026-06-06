@@ -4,7 +4,8 @@ This page provides an overview of all 12 lab exercises in the standard learning 
 
 ## Lab Progression Map
 
-<div class="mermaid">
+
+```mermaid
 graph LR
     A["Lab 00<br/>Environment Setup"] --> B["Lab 01<br/>Docker Basics"]
     B --> C["Lab 02<br/>K8s Pods"]
@@ -17,20 +18,7 @@ graph LR
     I --> J["Lab 09<br/>Flux GitOps"]
     J --> K["Lab 10<br/>Observability"]
     K --> L["Lab 11<br/>Troubleshooting"]
-    
-    style A fill:#e1f5ff
-    style B fill:#e1f5ff
-    style C fill:#fff3e0
-    style D fill:#fff3e0
-    style E fill:#fff3e0
-    style F fill:#fff3e0
-    style G fill:#f3e5f5
-    style H fill:#e8f5e9
-    style I fill:#e8f5e9
-    style J fill:#fce4ec
-    style K fill:#fce4ec
-    style L fill:#eee
-</div>
+```
 
 ## Lab Summary Table
 
@@ -66,6 +54,7 @@ graph LR
 $ kubectl cluster-info
 Kubernetes control plane is running at https://127.0.0.1:62xxx
 CoreDNS is running at https://127.0.0.1:62xxx
+
 ```
 
 ---
@@ -80,11 +69,12 @@ CoreDNS is running at https://127.0.0.1:62xxx
 - Pull and verify image on another system
 
 **Expected outcome:**
-```bash
+```
 $ docker images
 yourusername/myapp    1.0.0  abc123...  100MB
 $ docker push yourusername/myapp:1.0.0
 Pushed successfully to registry
+
 ```
 
 ---
@@ -101,11 +91,12 @@ Pushed successfully to registry
 - Understand pod lifecycle
 
 **Expected outcome:**
-```bash
+```
 $ kubectl get pods -l app=api
 NAME                READY   STATUS
 api-pod-1           1/1     Running
 api-pod-2           1/1     Running
+
 ```
 
 ---
@@ -120,11 +111,12 @@ api-pod-2           1/1     Running
 - Understanding init containers
 
 **Expected outcome:**
-```bash
+```
 $ kubectl scale deployment/api --replicas=5
 Scaled to 5 pods
 $ kubectl rollout status deployment/api
 Waiting for rollout to finish: 3 of 5 replicas ready
+
 ```
 
 ---
@@ -139,10 +131,11 @@ Waiting for rollout to finish: 3 of 5 replicas ready
 - Understanding Endpoints
 
 **Expected outcome:**
-```bash
+```
 $ kubectl get svc api-service
 NAME          TYPE      CLUSTER-IP     EXTERNAL-IP   PORT(S)
 api-service   NodePort  10.96.100.50   <none>        8080:31234/TCP
+
 ```
 
 ---
@@ -157,11 +150,12 @@ api-service   NodePort  10.96.100.50   <none>        8080:31234/TCP
 - Update configurations without redeploying
 
 **Expected outcome:**
-```bash
+```
 $ kubectl get configmaps
 api-config  ConfigMap
 $ kubectl get secrets
 api-secrets Secret
+
 ```
 
 ---
@@ -178,12 +172,13 @@ api-secrets Secret
 - Upgrade and rollback releases
 
 **Expected outcome:**
-```bash
+```
 $ helm list
 NAME       NAMESPACE   STATUS    CHART
 api-app    default     deployed  microservices-1.0.0
 $ helm upgrade api-app ./charts/microservices
 Upgraded release microservices in 2 seconds
+
 ```
 
 ---
@@ -200,10 +195,11 @@ Upgraded release microservices in 2 seconds
 - Test multi-region failover
 
 **Expected outcome:**
-```bash
+```
 $ kubectl get nodes --context=east
 $ kubectl get nodes --context=west
 # Both clusters running independently
+
 ```
 
 ---
@@ -218,10 +214,11 @@ $ kubectl get nodes --context=west
 - Test cross-cluster communication
 
 **Expected outcome:**
-```bash
+```
 Requests:
   east-api → sidecar → west-api (via cross-cluster networking)
   Logs collected and forwarded to central sidecar
+
 ```
 
 ---
@@ -238,11 +235,12 @@ Requests:
 - Understand GitOps drift detection
 
 **Expected outcome:**
-```bash
+```
 $ flux get helmreleases
 NAME     NAMESPACE  REVISION  SUSPENDED  STATUS
 api-app  default    1.2.3     False      Reconciling
 # Git push automatically triggers deployment
+
 ```
 
 ---
@@ -264,6 +262,7 @@ Grafana Dashboard:
   - Request latency by service
   - Error rates
   - Application custom metrics
+
 ```
 
 ---

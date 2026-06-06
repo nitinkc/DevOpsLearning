@@ -36,6 +36,7 @@ DevOps Mindset:
   Shared tools, shared dashboards, shared on-call
        ↓
   ✅ Collaboration, automation, continuous improvement
+
 ```
 
 ### **2. Key Principles (CALMS)**
@@ -51,7 +52,7 @@ DevOps Mindset:
 
 ## The DevOps Value Stream
 
-<div class="mermaid">
+```
 graph LR
     A["Developer<br/>Writes Code"] -->|Git Commit| B["CI Pipeline<br/>Build + Test"]
     B -->|Tests Pass| C["Build Artifact<br/>Docker Image"]
@@ -60,15 +61,7 @@ graph LR
     E -->|Running| F["Monitor &<br/>Alert"]
     F -->|Issue Found| G["Incident<br/>Response"]
     G -->|Fix Deployed| A
-    
-    style A fill:#e3f2fd
-    style B fill:#f3e5f5
-    style C fill:#fff3e0
-    style D fill:#e8f5e9
-    style E fill:#fce4ec
-    style F fill:#e0f2f1
-    style G fill:#ffe0b2
-</div>
+```
 
 **The goal:** Reduce the time from idea → production while keeping quality high.
 
@@ -86,6 +79,7 @@ resource "kubernetes" "cluster" {
   cpu        = 4
   memory     = 8
 }
+
 ```
 
 **Benefits:**
@@ -114,6 +108,7 @@ Compile, run tests, static analysis
 If all pass: build Docker image
        ↓
 If any fail: alert developer
+
 ```
 
 **Benefits:**
@@ -138,6 +133,7 @@ Deploy to Staging (Continuous Delivery)
      ↓ [Optional: Manual Approval]
      ↓
 Deploy to Production (Continuous Deployment)
+
 ```
 
 ### **4. Monitoring & Observability**

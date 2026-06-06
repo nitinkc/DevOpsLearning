@@ -28,7 +28,7 @@ flux bootstrap github \
   --repo=devops-learning-config \
   --branch=main \
   --path=./clusters/training
-  
+
 # You'll be prompted to create a personal access token
 # Creating repo in your GitHub account automatically
 ```
@@ -50,51 +50,55 @@ kubectl get pods -n flux-system
 
 Create `helmrelease.yaml`:
 
-```yaml
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
-kind: HelmRelease
-metadata:
-  name: myapp
-  namespace: default
-spec:
-  interval: 5m  # Check Git every 5 minutes
-  releaseName: myapp
-  chart:
+??? note "helmrelease.yaml"
+
+    ```yaml
+    apiVersion: helm.toolkit.fluxcd.io/v2beta1
+    kind: HelmRelease
+    metadata:
+      name: myapp
+      namespace: default
     spec:
-      chart: ./myapp-chart  # Local chart
-      sourceRef:
-        kind: GitRepository
-        name: flux-system
-        namespace: flux-system
-  values:
-    replicaCount: 3
-    image:
-      tag: "1.0.0"
-    resources:
-      requests:
-        memory: "256Mi"
-        cpu: "100m"
-      limits:
-        memory: "512Mi"
-        cpu: "500m"
-```
+      interval: 5m  # Check Git every 5 minutes
+      releaseName: myapp
+      chart:
+        spec:
+          chart: ./myapp-chart  # Local chart
+          sourceRef:
+            kind: GitRepository
+            name: flux-system
+            namespace: flux-system
+      values:
+        replicaCount: 3
+        image:
+          tag: "1.0.0"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "100m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+    ```
 
 ## Step 3: Create HelmRepository Source
 
 For external charts:
 
-```yaml
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
-metadata:
-  name: myrepo
-  namespace: flux-system
-spec:
-  interval: 5m
-  url: https://charts.example.com
-  secretRef:
-    name: helm-credentials  # Optional: for private repos
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: source.toolkit.fluxcd.io/v1beta2
+    kind: HelmRepository
+    metadata:
+      name: myrepo
+      namespace: flux-system
+    spec:
+      interval: 5m
+      url: https://charts.example.com
+      secretRef:
+        name: helm-credentials  # Optional: for private repos
+    ```
 
 ## Step 4: Push Config to Git
 
@@ -171,30 +175,32 @@ watch kubectl get deployment myapp
 
 Set up Slack notifications:
 
-```yaml
-apiVersion: notification.toolkit.fluxcd.io/v1beta2
-kind: Alert
-metadata:
-  name: deployment-alerts
-  namespace: flux-system
-spec:
-  providerRef:
-    name: slack
-  eventSeverity: error
-  eventSources:
-  - kind: HelmRelease
-    name: '*'
+??? note "YAML example"
 
----
-apiVersion: notification.toolkit.fluxcd.io/v1beta2
-kind: Provider
-metadata:
-  name: slack
-  namespace: flux-system
-spec:
-  type: slack
-  address: https://hooks.slack.com/services/YOUR/WEBHOOK/URL
-```
+    ```yaml
+    apiVersion: notification.toolkit.fluxcd.io/v1beta2
+    kind: Alert
+    metadata:
+      name: deployment-alerts
+      namespace: flux-system
+    spec:
+      providerRef:
+        name: slack
+      eventSeverity: error
+      eventSources:
+      - kind: HelmRelease
+        name: '*'
+    
+    ---
+    apiVersion: notification.toolkit.fluxcd.io/v1beta2
+    kind: Provider
+    metadata:
+      name: slack
+      namespace: flux-system
+    spec:
+      type: slack
+      address: https://hooks.slack.com/services/YOUR/WEBHOOK/URL
+    ```
 
 Create secret:
 
@@ -207,6 +213,7 @@ kubectl create secret generic slack-webhook \
 ## Step 9: Multi-Cluster GitOps
 
 Structure for multiple clusters:
+
 
 ```
 configs/
@@ -263,20 +270,22 @@ kubectl get helmrelease -o wide
 
 Implement Kustomization with Flux:
 
-```yaml
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: myapp
-  namespace: flux-system
-spec:
-  interval: 5m
-  path: ./kustomize/overlays/production
-  prune: true
-  sourceRef:
-    kind: GitRepository
-    name: flux-system
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: kustomize.toolkit.fluxcd.io/v1
+    kind: Kustomization
+    metadata:
+      name: myapp
+      namespace: flux-system
+    spec:
+      interval: 5m
+      path: ./kustomize/overlays/production
+      prune: true
+      sourceRef:
+        kind: GitRepository
+        name: flux-system
+    ```
 
 ## Cleanup
 

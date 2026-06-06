@@ -30,7 +30,7 @@ ls -la
 
 ### Dockerfile Structure
 
-```docker
+```dockerfile
 FROM python:3.11-slim
 WORKDIR /app
 COPY requirements.txt .
@@ -118,7 +118,8 @@ docker push YOUR_USERNAME/myapp:1.0.0
 
 Build with multi-stage to reduce image size:
 
-```docker
+
+```dockerfile
 # Build stage
 FROM python:3.11 AS builder
 WORKDIR /app

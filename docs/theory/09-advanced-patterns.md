@@ -17,6 +17,7 @@ Deploy Kubernetes across multiple geographic regions for:
        ↙        ↘
   EAST Region  WEST Region
   (K8s Cluster) (K8s Cluster)
+
 ```
 
 *Global LB routes based on:
@@ -45,35 +46,37 @@ Automatic routing based on latency/availability
 
 ### **Pattern: Logging Sidecar**
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: app-with-logging-sidecar
-spec:
-  containers:
-  # Main application
-  - name: app
-    image: myapp:1.0.0
-    volumeMounts:
-    - name: app-logs
-      mountPath: /var/log/app
-  
-  # Logging sidecar (collects and forwards logs)
-  - name: log-forwarder
-    image: fluent-bit:2.0.0
-    volumeMounts:
-    - name: app-logs
-      mountPath: /var/log/app
-      readOnly: true
-    env:
-    - name: LOKI_URL
-      value: "http://loki:3100"
+??? note "YAML example"
 
-  volumes:
-  - name: app-logs
-    emptyDir: {}
-```
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: app-with-logging-sidecar
+    spec:
+      containers:
+      # Main application
+      - name: app
+        image: myapp:1.0.0
+        volumeMounts:
+        - name: app-logs
+          mountPath: /var/log/app
+      
+      # Logging sidecar (collects and forwards logs)
+      - name: log-forwarder
+        image: fluent-bit:2.0.0
+        volumeMounts:
+        - name: app-logs
+          mountPath: /var/log/app
+          readOnly: true
+        env:
+        - name: LOKI_URL
+          value: "http://loki:3100"
+    
+      volumes:
+      - name: app-logs
+        emptyDir: {}
+    ```
 
 **Flow:**
 ```
@@ -88,28 +91,30 @@ Logs queryable in Grafana/Loki
 
 ### **Pattern: Metrics Sidecar**
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: app-with-metrics-sidecar
-spec:
-  containers:
-  # Main app (doesn't expose metrics)
-  - name: app
-    image: myapp:1.0.0
-  
-  # Metrics sidecar (proxies and augments metrics)
-  - name: metrics-proxy
-    image: metrics-sidecar:1.0.0
-    ports:
-    - containerPort: 9095
-    env:
-    - name: APP_HOST
-      value: "localhost:5000"
-    - name: METRICS_PORT
-      value: "9095"
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: app-with-metrics-sidecar
+    spec:
+      containers:
+      # Main app (doesn't expose metrics)
+      - name: app
+        image: myapp:1.0.0
+      
+      # Metrics sidecar (proxies and augments metrics)
+      - name: metrics-proxy
+        image: metrics-sidecar:1.0.0
+        ports:
+        - containerPort: 9095
+        env:
+        - name: APP_HOST
+          value: "localhost:5000"
+        - name: METRICS_PORT
+          value: "9095"
+    ```
 
 **requests:**
 ```
@@ -118,31 +123,33 @@ curl http://localhost:9095/metrics
 
 ### **Pattern: Network Sidecar (Envoy)**
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: app-with-envoy
-spec:
-  containers:
-  - name: app
-    image: myapp:1.0.0
-    ports:
-    - containerPort: 5000
-  
-  - name: envoy
-    image: envoyproxy/envoy:v1.26-latest
-    ports:
-    - containerPort: 8001  # Envoy proxy port
-    volumeMounts:
-    - name: envoy-config
-      mountPath: /etc/envoy
+??? note "YAML example"
 
-  volumes:
-  - name: envoy-config
-    configMap:
-      name: envoy-config
-```
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: app-with-envoy
+    spec:
+      containers:
+      - name: app
+        image: myapp:1.0.0
+        ports:
+        - containerPort: 5000
+      
+      - name: envoy
+        image: envoyproxy/envoy:v1.26-latest
+        ports:
+        - containerPort: 8001  # Envoy proxy port
+        volumeMounts:
+        - name: envoy-config
+          mountPath: /etc/envoy
+    
+      volumes:
+      - name: envoy-config
+        configMap:
+          name: envoy-config
+    ```
 
 Envoy intercepts all traffic:
 
@@ -158,47 +165,51 @@ Envoy intercepts all traffic:
 
 Restrict what pods can do.
 
-```yaml
-apiVersion: policy/v1beta1
-kind: PodSecurityPolicy
-metadata:
-  name: restricted
-spec:
-  privileged: false                    # No privileged mode
-  allowPrivilegeEscalation: false     # No elevation
-  requiredDropCapabilities:
-  - NET_RAW
-  - SYS_ADMIN
-  volumes:
-  - 'configMap'
-  - 'emptyDir'
-  - 'projected'
-  - 'secret'
-  - 'downwardAPI'
-  - 'persistentVolumeClaim'
-  hostNetwork: false
-  hostIPC: false
-  hostPID: false
-  runAsUser:
-    rule: 'MustRunAsNonRoot'
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: policy/v1beta1
+    kind: PodSecurityPolicy
+    metadata:
+      name: restricted
+    spec:
+      privileged: false                    # No privileged mode
+      allowPrivilegeEscalation: false     # No elevation
+      requiredDropCapabilities:
+      - NET_RAW
+      - SYS_ADMIN
+      volumes:
+      - 'configMap'
+      - 'emptyDir'
+      - 'projected'
+      - 'secret'
+      - 'downwardAPI'
+      - 'persistentVolumeClaim'
+      hostNetwork: false
+      hostIPC: false
+      hostPID: false
+      runAsUser:
+        rule: 'MustRunAsNonRoot'
+    ```
 
 Apply to pods:
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: secure-app
-  annotations:
-    seccomp.security.alpha.kubernetes.io/pod: runtime/default
-spec:
-  securityContext:
-    runAsNonRoot: true
-    runAsUser: 1000
-  containers:
-  - name: app
-    image: myapp:1.0.0
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: secure-app
+      annotations:
+        seccomp.security.alpha.kubernetes.io/pod: runtime/default
+    spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+      containers:
+      - name: app
+        image: myapp:1.0.0
+    ```
 
 ---
 
@@ -206,46 +217,50 @@ spec:
 
 Prevent namespace from consuming too many resources.
 
-```yaml
-apiVersion: v1
-kind: ResourceQuota
-metadata:
-  name: production-quota
-  namespace: production
-spec:
-  hard:
-    requests.cpu: "100"      # Max total CPU requested
-    requests.memory: "200Gi" # Max total memory requested
-    limits.cpu: "200"        # Max total CPU limits
-    limits.memory: "400Gi"   # Max total memory limits
-    pods: "100"              # Max 100 pods
-    services: "10"           # Max 10 services
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: ResourceQuota
+    metadata:
+      name: production-quota
+      namespace: production
+    spec:
+      hard:
+        requests.cpu: "100"      # Max total CPU requested
+        requests.memory: "200Gi" # Max total memory requested
+        limits.cpu: "200"        # Max total CPU limits
+        limits.memory: "400Gi"   # Max total memory limits
+        pods: "100"              # Max 100 pods
+        services: "10"           # Max 10 services
+    ```
 
 **LimitRange** (per pod defaults if not specified):
 
-```yaml
-apiVersion: v1
-kind: LimitRange
-metadata:
-  name: production-limits
-  namespace: production
-spec:
-  limits:
-  - max:
-      cpu: "4"
-      memory: "8Gi"
-    min:
-      cpu: "100m"
-      memory: "128Mi"
-    default:
-      cpu: "500m"
-      memory: "512Mi"
-    defaultRequest:
-      cpu: "250m"
-      memory: "256Mi"
-    type: Container
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: LimitRange
+    metadata:
+      name: production-limits
+      namespace: production
+    spec:
+      limits:
+      - max:
+          cpu: "4"
+          memory: "8Gi"
+        min:
+          cpu: "100m"
+          memory: "128Mi"
+        default:
+          cpu: "500m"
+          memory: "512Mi"
+        defaultRequest:
+          cpu: "250m"
+          memory: "256Mi"
+        type: Container
+    ```
 
 ---
 
@@ -253,32 +268,34 @@ spec:
 
 Auto-scale pods based on metrics.
 
-```yaml
-apiVersion: autoscaling/v2
-kind: HorizontalPodAutoscaler
-metadata:
-  name: api-hpa
-spec:
-  scaleTargetRef:
-    apiVersion: apps/v1
-    kind: Deployment
-    name: api
-  minReplicas: 3
-  maxReplicas: 10
-  metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 70
-  - type: Resource
-    resource:
-      name: memory
-      target:
-        type: Utilization
-        averageUtilization: 80
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: autoscaling/v2
+    kind: HorizontalPodAutoscaler
+    metadata:
+      name: api-hpa
+    spec:
+      scaleTargetRef:
+        apiVersion: apps/v1
+        kind: Deployment
+        name: api
+      minReplicas: 3
+      maxReplicas: 10
+      metrics:
+      - type: Resource
+        resource:
+          name: cpu
+          target:
+            type: Utilization
+            averageUtilization: 70
+      - type: Resource
+        resource:
+          name: memory
+          target:
+            type: Utilization
+            averageUtilization: 80
+    ```
 
 **Scaling behavior:**
 ```
@@ -297,19 +314,21 @@ HPA scales down (remove 1 pod per minute)
 
 Auto-adjust resource requests based on actual usage.
 
-```yaml
-apiVersion: autoscaling.k8s.io/v1
-kind: VerticalPodAutoscaler
-metadata:
-  name: api-vpa
-spec:
-  targetRef:
-    apiVersion: "apps/v1"
-    kind: Deployment
-    name: api
-  updatePolicy:
-    updateMode: "auto"  # Auto-apply recommendations
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: autoscaling.k8s.io/v1
+    kind: VerticalPodAutoscaler
+    metadata:
+      name: api-vpa
+    spec:
+      targetRef:
+        apiVersion: "apps/v1"
+        kind: Deployment
+        name: api
+      updatePolicy:
+        updateMode: "auto"  # Auto-apply recommendations
+    ```
 
 VPA monitors and recommends:
 ```
@@ -322,43 +341,45 @@ Recommendation: Reduce requests
 
 ## Network Policies (In-Depth)
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: multi-tier-policy
-spec:
-  podSelector:
-    matchLabels:
-      tier: api
-  policyTypes:
-  - Ingress
-  - Egress
-  ingress:
-  - from:
-    - podSelector:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: multi-tier-policy
+    spec:
+      podSelector:
         matchLabels:
-          tier: frontend
-    - namespaceSelector:
-        matchLabels:
-          name: monitoring
-    ports:
-    - protocol: TCP
-      port: 5000
-  egress:
-  - to:
-    - podSelector:
-        matchLabels:
-          tier: database
-    ports:
-    - protocol: TCP
-      port: 5432
-  - to:
-    - namespaceSelector: {}
-    ports:
-    - protocol: TCP
-      port: 53  # DNS
-```
+          tier: api
+      policyTypes:
+      - Ingress
+      - Egress
+      ingress:
+      - from:
+        - podSelector:
+            matchLabels:
+              tier: frontend
+        - namespaceSelector:
+            matchLabels:
+              name: monitoring
+        ports:
+        - protocol: TCP
+          port: 5000
+      egress:
+      - to:
+        - podSelector:
+            matchLabels:
+              tier: database
+        ports:
+        - protocol: TCP
+          port: 5432
+      - to:
+        - namespaceSelector: {}
+        ports:
+        - protocol: TCP
+          port: 53  # DNS
+    ```
 
 ---
 

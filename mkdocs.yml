@@ -1,33 +1,94 @@
 site_name: DevOps Learning
 site_description: Comprehensive DevOps learning path from Docker to Kubernetes, Helm, and Flux
+docs_dir: docs
+repo_url: https://github.com/nitinkc/DevOpsLearning
+repo_name: nitinkc/DevOpsLearning
+edit_uri: edit/main/docs/
+
+# Auto-reload when files outside docs/ change (e.g. lab files, sample-app)
+watch:
+  - labs/
+  - sample-app/
+  - minikube-setup/
+
 theme:
-  name: mkdocs
-  highlightjs: true
-  hljs_languages:
-    - yaml
-    - rust
+  name: material
+  features:
+    # Navigation
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+    - navigation.expand
+    - navigation.path
+    - navigation.top           # Back-to-top button
+    - navigation.footer        # Prev/Next page links
+    - navigation.instant       # SPA-style instant loading
+    - navigation.instant.progress
+    # Search
+    - search.suggest
+    - search.highlight
+    - search.share
+    # Content
+    - content.code.copy
+    - content.code.annotate    # (1) style code annotations
+    - content.tabs.link        # Sync tabs across page
+    - content.tooltips
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: brown
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: brown
+      accent: blue
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+
+plugins:
+  - search:
+      lang: en
 
 markdown_extensions:
   - admonition
-  - pymdownx.inlinehilite
+  - pymdownx.details
   - pymdownx.highlight:
-      use_pygments: false
+      anchor_linenums: true
+      use_pygments: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
   - pymdownx.superfences:
       custom_fences:
         - name: mermaid
           class: mermaid
-          format: !!python/name:pymdownx.superfences.fence_div_format
-  - pymdownx.details
-
-plugins:
-  - search
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - toc:
+      permalink: true
+      title: On this page
+  - abbr
+  - attr_list
+  - md_in_html
+  - pymdownx.snippets:
+      base_path: docs
+  - tables
 
 extra_css:
   - css/custom.css
 
 extra_javascript:
-  - https://unpkg.com/mermaid@10.9.0/dist/mermaid.min.js
-  - js/mermaid-init.js
+  - https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js
 
 nav:
   - Home: index.md
@@ -57,4 +118,3 @@ nav:
     - 10 Observability: labs/10-observability-monitoring.md
     - 11 Troubleshooting: labs/11-troubleshooting.md
   - Interview Prep: interview-prep.md
-  - Git: https://github.com/nitinkc/DevOpsLearning

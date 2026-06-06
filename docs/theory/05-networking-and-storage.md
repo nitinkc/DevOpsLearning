@@ -6,20 +6,22 @@
 
 Internal communication only (between pods).
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-service
-spec:
-  type: ClusterIP  # Default
-  selector:
-    app: api
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 5000
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: api-service
+    spec:
+      type: ClusterIP  # Default
+      selector:
+        app: api
+      ports:
+      - protocol: TCP
+        port: 80
+        targetPort: 5000
+    ```
 
 **Pods can reach via DNS:**
 ```bash
@@ -32,20 +34,22 @@ curl http://api-service
 
 Expose on every node's IP.
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-service
-spec:
-  type: NodePort
-  selector:
-    app: api
-  ports:
-  - port: 80
-    targetPort: 5000
-    nodePort: 30000  # Access via <node-ip>:30000
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: api-service
+    spec:
+      type: NodePort
+      selector:
+        app: api
+      ports:
+      - port: 80
+        targetPort: 5000
+        nodePort: 30000  # Access via <node-ip>:30000
+    ```
 
 **Access from outside:**
 ```bash
@@ -56,19 +60,21 @@ curl http://node-ip:30000
 
 Cloud provider load balancer (AWS ELB, GCP, Azure).
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-service
-spec:
-  type: LoadBalancer
-  selector:
-    app: api
-  ports:
-  - port: 80
-    targetPort: 5000
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: api-service
+    spec:
+      type: LoadBalancer
+      selector:
+        app: api
+      ports:
+      - port: 80
+        targetPort: 5000
+    ```
 
 **Get external IP:**
 ```bash
@@ -82,39 +88,41 @@ kubectl get svc api-service
 
 Route HTTP/HTTPS to different services based on hostname/path.
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: api-ingress
-spec:
-  ingressClassName: nginx  # Use nginx ingress controller
-  rules:
-  - host: api.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: api-service
-            port:
-              number: 80
-  - host: web.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: web-service
-            port:
-              number: 80
-  tls:
-  - hosts:
-    - api.example.com
-    secretName: api-tls-secret
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: api-ingress
+    spec:
+      ingressClassName: nginx  # Use nginx ingress controller
+      rules:
+      - host: api.example.com
+        http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-service
+                port:
+                  number: 80
+      - host: web.example.com
+        http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: web-service
+                port:
+                  number: 80
+      tls:
+      - hosts:
+        - api.example.com
+        secretName: api-tls-secret
+    ```
 
 ```
 Request to api.example.com → Ingress → api-service → api-pod
@@ -155,57 +163,63 @@ curl http://api-service.default.svc.cluster.local  # FQDN
 
 Cluster-level storage resource.
 
-```yaml
-apiVersion: v1
-kind: PersistentVolume
-metadata:
-  name: pv-data
-spec:
-  capacity:
-    storage: 10Gi
-  accessModes:
-    - ReadWriteOnce  # Single pod can read/write
-  storageClassName: standard
-  hostPath:
-    path: /mnt/data  # Local disk (for dev/testing only)
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: PersistentVolume
+    metadata:
+      name: pv-data
+    spec:
+      capacity:
+        storage: 10Gi
+      accessModes:
+        - ReadWriteOnce  # Single pod can read/write
+      storageClassName: standard
+      hostPath:
+        path: /mnt/data  # Local disk (for dev/testing only)
+    ```
 
 ### **PersistentVolumeClaim (PVC)**
 
 Request for storage.
 
-```yaml
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: pvc-data
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: pvc-data
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
+    ```
 
 ### **Use in Pod**
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: app-with-storage
-spec:
-  containers:
-  - name: app
-    image: myapp:1.0.0
-    volumeMounts:
-    - name: data
-      mountPath: /data
-  volumes:
-  - name: data
-    persistentVolumeClaim:
-      claimName: pvc-data
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: app-with-storage
+    spec:
+      containers:
+      - name: app
+        image: myapp:1.0.0
+        volumeMounts:
+        - name: data
+          mountPath: /data
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: pvc-data
+    ```
 
 ---
 
@@ -213,45 +227,49 @@ spec:
 
 ### **ConfigMap (Non-Sensitive Configuration)**
 
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: app-config
-data:
-  DATABASE_HOST: "postgres.default.svc.cluster.local"
-  LOG_LEVEL: "INFO"
-  CONFIG_FILE: |
-    server:
-      port: 5000
-      debug: false
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: app-config
+    data:
+      DATABASE_HOST: "postgres.default.svc.cluster.local"
+      LOG_LEVEL: "INFO"
+      CONFIG_FILE: |
+        server:
+          port: 5000
+          debug: false
+    ```
 
 **Use in Pod:**
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: app
-spec:
-  containers:
-  - name: app
-    image: myapp:1.0.0
-    env:
-    - name: DATABASE_HOST
-      valueFrom:
-        configMapKeyRef:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: app
+    spec:
+      containers:
+      - name: app
+        image: myapp:1.0.0
+        env:
+        - name: DATABASE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: app-config
+              key: DATABASE_HOST
+        volumeMounts:
+        - name: config
+          mountPath: /etc/config
+      volumes:
+      - name: config
+        configMap:
           name: app-config
-          key: DATABASE_HOST
-    volumeMounts:
-    - name: config
-      mountPath: /etc/config
-  volumes:
-  - name: config
-    configMap:
-      name: app-config
-```
+    ```
 
 ### **Secret (Sensitive Data)**
 
@@ -305,26 +323,28 @@ spec:
 
 Allow specific traffic:
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-api-traffic
-spec:
-  podSelector:
-    matchLabels:
-      app: api
-  policyTypes:
-  - Ingress
-  ingress:
-  - from:
-    - podSelector:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-api-traffic
+    spec:
+      podSelector:
         matchLabels:
-          app: frontend
-    ports:
-    - protocol: TCP
-      port: 5000
-```
+          app: api
+      policyTypes:
+      - Ingress
+      ingress:
+      - from:
+        - podSelector:
+            matchLabels:
+              app: frontend
+        ports:
+        - protocol: TCP
+          port: 5000
+    ```
 
 ---
 
@@ -332,23 +352,25 @@ spec:
 
 ### **Sidecar Pattern**
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: app-with-sidecar
-spec:
-  containers:
-  - name: app
-    image: myapp:1.0.0
-    ports:
-    - containerPort: 5000
-  
-  - name: sidecar-logging
-    image: logging-sidecar:1.0.0
-    ports:
-    - containerPort: 9095
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: app-with-sidecar
+    spec:
+      containers:
+      - name: app
+        image: myapp:1.0.0
+        ports:
+        - containerPort: 5000
+      
+      - name: sidecar-logging
+        image: logging-sidecar:1.0.0
+        ports:
+        - containerPort: 9095
+    ```
 
 Both containers share:
 

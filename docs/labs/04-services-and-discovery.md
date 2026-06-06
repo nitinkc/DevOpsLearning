@@ -15,20 +15,22 @@
 
 ## Step 1: Create ClusterIP Service
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-service
-spec:
-  type: ClusterIP
-  selector:
-    app: api
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 5000
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: api-service
+    spec:
+      type: ClusterIP
+      selector:
+        app: api
+      ports:
+      - protocol: TCP
+        port: 80
+        targetPort: 5000
+    ```
 
 Deploy:
 
@@ -62,21 +64,23 @@ exit  # Exit test pod
 
 ## Step 3: Create NodePort Service
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-nodeport
-spec:
-  type: NodePort
-  selector:
-    app: api
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 5000
-    nodePort: 30000
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: api-nodeport
+    spec:
+      type: NodePort
+      selector:
+        app: api
+      ports:
+      - protocol: TCP
+        port: 80
+        targetPort: 5000
+        nodePort: 30000
+    ```
 
 Deploy:
 
@@ -144,19 +148,21 @@ kubectl run test --image=curlimages/curl --rm -it -- curl http://api-service
 
 Create LoadBalancer service:
 
-```yaml
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-lb
-spec:
-  type: LoadBalancer
-  selector:
-    app: api
-  ports:
-  - port: 80
-    targetPort: 5000
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: api-lb
+    spec:
+      type: LoadBalancer
+      selector:
+        app: api
+      ports:
+      - port: 80
+        targetPort: 5000
+    ```
 
 Note: On Minikube, LoadBalancer doesn't get external IP. Use:
 ```bash

@@ -45,50 +45,52 @@ kubectl describe secret app-secret
 
 ## Step 3: Use ConfigMap as Environment Variables
 
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: api-with-config
-spec:
-  replicas: 2
-  selector:
-    matchLabels:
-      app: api-config
-  template:
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: apps/v1
+    kind: Deployment
     metadata:
-      labels:
-        app: api-config
+      name: api-with-config
     spec:
-      containers:
-      - name: api
-        image: YOUR_USERNAME/myapp:1.0.0
-        ports:
-        - containerPort: 5000
-        env:
-        # From ConfigMap
-        - name: LOG_LEVEL
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: LOG_LEVEL
-        - name: ENVIRONMENT
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: ENVIRONMENT
-        - name: DATABASE_HOST
-          valueFrom:
-            configMapKeyRef:
-              name: app-config
-              key: DATABASE_HOST
-        # From Secret
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: app-secret
-              key: DB_PASSWORD
-```
+      replicas: 2
+      selector:
+        matchLabels:
+          app: api-config
+      template:
+        metadata:
+          labels:
+            app: api-config
+        spec:
+          containers:
+          - name: api
+            image: YOUR_USERNAME/myapp:1.0.0
+            ports:
+            - containerPort: 5000
+            env:
+            # From ConfigMap
+            - name: LOG_LEVEL
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: LOG_LEVEL
+            - name: ENVIRONMENT
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: ENVIRONMENT
+            - name: DATABASE_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: app-config
+                  key: DATABASE_HOST
+            # From Secret
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: app-secret
+                  key: DB_PASSWORD
+    ```
 
 Deploy and verify:
 
@@ -126,23 +128,25 @@ kubectl describe configmap app-config-file
 
 Use in Pod:
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: api-with-volume
-spec:
-  containers:
-  - name: api
-    image: YOUR_USERNAME/myapp:1.0.0
-    volumeMounts:
-    - name: config-volume
-      mountPath: /etc/config
-  volumes:
-  - name: config-volume
-    configMap:
-      name: app-config-file
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: api-with-volume
+    spec:
+      containers:
+      - name: api
+        image: YOUR_USERNAME/myapp:1.0.0
+        volumeMounts:
+        - name: config-volume
+          mountPath: /etc/config
+      volumes:
+      - name: config-volume
+        configMap:
+          name: app-config-file
+    ```
 
 Deploy and verify:
 

@@ -15,46 +15,48 @@
 
 ## Step 1: Deploy API with Logging Sidecar
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: api-with-logging-sidecar
-spec:
-  containers:
-  # Main application container
-  - name: api
-    image: YOUR_USERNAME/myapp:1.0.0
-    ports:
-    - containerPort: 5000
-    volumeMounts:
-    - name: app-logs
-      mountPath: /var/log/app
-    # Have app write logs to /var/log/app/app.log
-      
-  # Logging sidecar (collects & forwards)
-  - name: log-forwarder
-    image: curlimages/curl  # Simplified for demo
-    volumeMounts:
-    - name: app-logs
-      mountPath: /var/log/app
-      readOnly: true
-    command:
-    - /bin/sh
-    - -c
-    - |
-      while true; do
-        if [ -f /var/log/app/app.log ]; then
-          echo "=== Logs from app ==="
-          tail -f /var/log/app/app.log
-        fi
-        sleep 5
-      done
+??? note "YAML example"
 
-  volumes:
-  - name: app-logs
-    emptyDir: {}
-```
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: api-with-logging-sidecar
+    spec:
+      containers:
+      # Main application container
+      - name: api
+        image: YOUR_USERNAME/myapp:1.0.0
+        ports:
+        - containerPort: 5000
+        volumeMounts:
+        - name: app-logs
+          mountPath: /var/log/app
+        # Have app write logs to /var/log/app/app.log
+          
+      # Logging sidecar (collects & forwards)
+      - name: log-forwarder
+        image: curlimages/curl  # Simplified for demo
+        volumeMounts:
+        - name: app-logs
+          mountPath: /var/log/app
+          readOnly: true
+        command:
+        - /bin/sh
+        - -c
+        - |
+          while true; do
+            if [ -f /var/log/app/app.log ]; then
+              echo "=== Logs from app ==="
+              tail -f /var/log/app/app.log
+            fi
+            sleep 5
+          done
+    
+      volumes:
+      - name: app-logs
+        emptyDir: {}
+    ```
 
 Deploy and test:
 
@@ -74,30 +76,32 @@ kubectl logs api-with-logging-sidecar -c api
 
 ## Step 2: Deploy API with Metrics Sidecar
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: api-with-metrics-sidecar
-spec:
-  containers:
-  # Main app (serves on port 5000)
-  - name: api
-    image: YOUR_USERNAME/myapp:1.0.0
-    ports:
-    - containerPort: 5000
-    - name: metrics-source
-      containerPort: 5001  # App metrics port
-      
-  # Metrics proxy sidecar
-  - name: metrics-proxy
-    image: prom/node-exporter:latest  # Simplified
-    ports:
-    - containerPort: 9095  # Expose metrics
-    env:
-    - name: APP_HOST
-      value: "localhost:5001"
-```
+??? note "YAML example"
+
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: api-with-metrics-sidecar
+    spec:
+      containers:
+      # Main app (serves on port 5000)
+      - name: api
+        image: YOUR_USERNAME/myapp:1.0.0
+        ports:
+        - containerPort: 5000
+        - name: metrics-source
+          containerPort: 5001  # App metrics port
+          
+      # Metrics proxy sidecar
+      - name: metrics-proxy
+        image: prom/node-exporter:latest  # Simplified
+        ports:
+        - containerPort: 9095  # Expose metrics
+        env:
+        - name: APP_HOST
+          value: "localhost:5001"
+    ```
 
 Deploy:
 
@@ -117,54 +121,56 @@ pkill -f "port-forward"
 
 Simple Envoy-like proxy (demo):
 
-```yaml
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: nginx-config
-data:
-  nginx.conf: |
-    events { worker_connections 1024; }
-    http {
-      upstream api_backend {
-        server localhost:5000;
-      }
-      server {
-        listen 8001;
-        location / {
-          proxy_pass http://api_backend;
-          proxy_set_header X-Forwarded-For $remote_addr;
-        }
-      }
-    }
+??? note "YAML example"
 
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: api-with-proxy-sidecar
-spec:
-  containers:
-  # Main API
-  - name: api
-    image: YOUR_USERNAME/myapp:1.0.0
-    ports:
-    - containerPort: 5000
-    
-  # Proxy sidecar (nginx)
-  - name: proxy
-    image: nginx:latest
-    ports:
-    - containerPort: 8001
-    volumeMounts:
-    - name: nginx-config
-      mountPath: /etc/nginx
-      
-  volumes:
-  - name: nginx-config
-    configMap:
+    ```yaml
+    apiVersion: v1
+    kind: ConfigMap
+    metadata:
       name: nginx-config
-```
+    data:
+      nginx.conf: |
+        events { worker_connections 1024; }
+        http {
+          upstream api_backend {
+            server localhost:5000;
+          }
+          server {
+            listen 8001;
+            location / {
+              proxy_pass http://api_backend;
+              proxy_set_header X-Forwarded-For $remote_addr;
+            }
+          }
+        }
+    
+    ---
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: api-with-proxy-sidecar
+    spec:
+      containers:
+      # Main API
+      - name: api
+        image: YOUR_USERNAME/myapp:1.0.0
+        ports:
+        - containerPort: 5000
+        
+      # Proxy sidecar (nginx)
+      - name: proxy
+        image: nginx:latest
+        ports:
+        - containerPort: 8001
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx
+          
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+    ```
 
 Deploy:
 
@@ -184,79 +190,83 @@ pkill -f "port-forward"
 
 Create restrictive network policy:
 
-```yaml
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: deny-all
-spec:
-  podSelector: {}
-  policyTypes:
-  - Ingress
-  - Egress
-  ingress: []
-  egress: []
+??? note "YAML example"
 
----
-# Allow specific traffic only
-apiVersion: networking.k8s.io/v1
-kind: NetworkPolicy
-metadata:
-  name: allow-api
-spec:
-  podSelector:
-    matchLabels:
-      app: api
-  policyTypes:
-  - Ingress
-  ingress:
-  - from:
-    - podSelector:
+    ```yaml
+    apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: deny-all
+    spec:
+      podSelector: {}
+      policyTypes:
+      - Ingress
+      - Egress
+      ingress: []
+      egress: []
+    
+    ---
+    # Allow specific traffic only
+    apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: allow-api
+    spec:
+      podSelector:
         matchLabels:
-          role: frontend
-    ports:
-    - protocol: TCP
-      port: 5000
-```
+          app: api
+      policyTypes:
+      - Ingress
+      ingress:
+      - from:
+        - podSelector:
+            matchLabels:
+              role: frontend
+        ports:
+        - protocol: TCP
+          port: 5000
+    ```
 
 ## Step 5: Cross-Pod Communication
 
 Test pods communicating via sidecars:
 
-```yaml
-apiVersion: v1
-kind: Pod
-metadata:
-  name: frontend-pod
-  labels:
-    app: frontend
-    role: frontend
-spec:
-  containers:
-  - name: frontend
-    image: curlimages/curl
-    command:
-    - /bin/sh
-    - -c
-    - |
-      while true; do
-        echo "Calling API..."
-        curl http://api-with-proxy-sidecar:8001/api/data
-        sleep 10
-      done
+??? note "YAML example"
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: api-with-proxy-sidecar
-spec:
-  selector:
-    # Must match pod that has sidecar
-  ports:
-  - port: 8001
-    targetPort: 8001
-```
+    ```yaml
+    apiVersion: v1
+    kind: Pod
+    metadata:
+      name: frontend-pod
+      labels:
+        app: frontend
+        role: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: curlimages/curl
+        command:
+        - /bin/sh
+        - -c
+        - |
+          while true; do
+            echo "Calling API..."
+            curl http://api-with-proxy-sidecar:8001/api/data
+            sleep 10
+          done
+    
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: api-with-proxy-sidecar
+    spec:
+      selector:
+        # Must match pod that has sidecar
+      ports:
+      - port: 8001
+        targetPort: 8001
+    ```
 
 Deploy and test:
 
