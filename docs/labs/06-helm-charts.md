@@ -37,7 +37,7 @@ tree
 
 Edit `Chart.yaml`:
 
-??? note "YAML example"
+??? note "Chart.yaml"
 
     ```yaml
     apiVersion: v2
@@ -59,7 +59,7 @@ Edit `Chart.yaml`:
 
 Edit `values.yaml`:
 
-??? note "YAML example"
+??? note "values.yaml"
 
     ```yaml
     replicaCount: 3
@@ -100,7 +100,7 @@ Edit `values.yaml`:
 
 Edit `templates/deployment.yaml`:
 
-??? note "YAML example"
+??? note "deployment.yaml"
 
     ```yaml
     apiVersion: apps/v1
@@ -156,7 +156,7 @@ Edit `templates/deployment.yaml`:
 
 Edit `templates/service.yaml`:
 
-??? note "YAML example"
+??? note "service.yaml"
 
     ```yaml
     apiVersion: v1

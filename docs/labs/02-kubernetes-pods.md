@@ -95,10 +95,10 @@ kubectl get pod api-pod -o wide
 
 ```bash
 # Port-forward to test locally
-kubectl port-forward pod/api-pod 8000:5000 &
+kubectl port-forward pod/api-pod 9000:5000 &
 
 # Test API
-curl http://localhost:8000/health
+curl http://localhost:9000/health
 # Expected: {"status":"healthy"}
 ```
 

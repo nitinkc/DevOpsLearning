@@ -45,7 +45,7 @@ kubectl describe secret app-secret
 
 ## Step 3: Use ConfigMap as Environment Variables
 
-??? note "YAML example"
+??? note "api-with-config.yaml"
 
     ```yaml
     apiVersion: apps/v1
@@ -128,7 +128,7 @@ kubectl describe configmap app-config-file
 
 Use in Pod:
 
-??? note "YAML example"
+??? note "api-with-volume.yaml"
 
     ```yaml
     apiVersion: v1

@@ -54,9 +54,9 @@ service_dns="api-service.default.svc.cluster.local"
 kubectl run test-pod --image=curlimages/curl --rm -it -- sh
 
 # Inside pod, run:
-curl http://api-service  # Short name (same namespace)
-curl http://api-service.default  # With namespace
-curl http://api-service.default.svc.cluster.local  # FQDN
+curl http://api-service/health  # Short name (same namespace)
+curl http://api-service.default/health  # With namespace
+curl http://api-service.default.svc.cluster.local/health  # FQDN
 # All should return: {"status":"healthy"}
 
 exit  # Exit test pod
@@ -90,13 +90,20 @@ kubectl apply -f api-nodeport.yaml
 # Get NodePort details
 kubectl get service api-nodeport
 
-# Get Minikube IP
-minikube ip  # e.g., 192.168.x.x
+# On macOS with the Minikube Docker driver, the node IP may not be directly reachable.
+# Use the Minikube helper to open a tunnel and print a working local URL.
+minikube service api-nodeport --url
 
-# Test external access
-curl http://$(minikube ip):30000/health
+# Example output: http://127.0.0.1:62177
+# Keep that terminal open while testing from another terminal:
+curl http://127.0.0.1:62177/health
 # Returns: {"status":"healthy"}
+
+# Linux users can often also use the direct NodePort form:
+curl http://$(minikube ip):30000/health
 ```
+
+If `curl http://$(minikube ip):30000/health` hangs on macOS, that usually means you're using the Docker driver and the Minikube VM network is not directly exposed to the host. In that case, `minikube service api-nodeport --url` is the expected way to test NodePort access locally.
 
 ## Step 4: Port-Forward
 
@@ -140,8 +147,11 @@ kubectl get endpoints api-service
 # ENDPOINTS should show 3 pod IPs
 
 # Service is discoverable
-kubectl run test --image=curlimages/curl --rm -it -- curl http://api-service
+kubectl run test --image=curlimages/curl --rm -it -- curl http://api-service/health
 # Returns: {"status":"healthy"}
+
+# Optional: verify NodePort access from your host
+minikube service api-nodeport --url
 ```
 
 ## Challenge (Optional)

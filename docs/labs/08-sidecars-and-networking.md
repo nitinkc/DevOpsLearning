@@ -15,7 +15,7 @@
 
 ## Step 1: Deploy API with Logging Sidecar
 
-??? note "YAML example"
+??? note "api-with-logging-sidecar.yaml"
 
     ```yaml
     apiVersion: v1
@@ -76,7 +76,7 @@ kubectl logs api-with-logging-sidecar -c api
 
 ## Step 2: Deploy API with Metrics Sidecar
 
-??? note "YAML example"
+??? note "api-with-metrics-sidecar.yaml"
 
     ```yaml
     apiVersion: v1
@@ -121,7 +121,7 @@ pkill -f "port-forward"
 
 Simple Envoy-like proxy (demo):
 
-??? note "YAML example"
+??? note "api-with-proxy-sidecar.yaml"
 
     ```yaml
     apiVersion: v1
@@ -231,7 +231,7 @@ Create restrictive network policy:
 
 Test pods communicating via sidecars:
 
-??? note "YAML example"
+??? note "frontend-pod.yaml"
 
     ```yaml
     apiVersion: v1
