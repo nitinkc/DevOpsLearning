@@ -3,7 +3,7 @@
 ## Objectives
 
 - ✅ Create pod manifests with labels
-- ✅ Deploy pods to K8s cluster
+- ✅ Deploy pods (loaded from dockerhub registry) to K8s cluster
 - ✅ Inspect pod details and logs
 - ✅ Apply resource requests/limits
 - ✅ Understand pod lifecycle
@@ -11,10 +11,16 @@
 ## Prerequisites
 
 - Lab 01 complete
-- Docker image pushed to registry
-- Minikube cluster running
+- **Docker image pushed to registry**
+- **Minikube cluster running**
 - ~1 hour
 
+**Option A: Single Cluster (Quick Start)**
+```bash
+minikube start --cpus 4 --memory 6144 --driver docker
+kubectl cluster-info
+```
+    
 ## Steps
 
 ### Step 1: Create Pod Manifest

@@ -12,7 +12,69 @@
 
 - Docker Desktop or Docker Engine installed
 - ~15 minutes
-- Reference: [Setup Guide](../docs/setup.md)
+- Reference: [Setup Guide](../setup.md)
+
+### 🔍 How to Tell if Minikube is Running
+
+Before any lab, always verify your cluster is up. Run `minikube status` and compare to the examples below.
+
+**✅ Minikube is running (ready to use):**
+
+```
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+```
+
+**⚠️ Minikube is stopped (cluster exists but not started):**
+
+```
+minikube
+type: Control Plane
+host: Stopped
+kubelet: Stopped
+apiserver: Stopped
+kubeconfig: Stopped
+```
+
+**❌ Docker Desktop is not running (minikube can't start without it):**
+
+```
+E0606 ...  status error: host: state: unknown state "minikube": docker container inspect minikube
+...
+failed to connect to the docker API at unix://...docker.sock; check if the path is correct
+and if the daemon is running: dial unix ...docker.sock: connect: no such file or directory
+```
+
+**❌ kubectl error when cluster is not reachable:**
+
+```
+error: error validating "api-pod.yaml": error validating data: failed to download openapi:
+Get "https://127.0.0.1:XXXXX/openapi/v2?timeout=32s": dial tcp 127.0.0.1:XXXXX:
+connect: connection refused
+```
+
+> **Note:** The `openapi` download is normal — `kubectl` always fetches the cluster's schema to validate your YAML. The real error is `connection refused`, meaning the cluster is unreachable.
+
+### 🚀 Starting the Cluster
+
+```bash
+# 1. Start Docker Desktop first (open from Applications)
+#    Wait for the whale icon in the menu bar to stop animating
+
+# 2. Then start Minikube
+minikube start
+
+# OR for the named "east" cluster used in multi-region labs:
+minikube start -p east --cpus 4 --memory 6144 --driver docker
+
+# 3. Confirm it's ready
+minikube status
+kubectl get nodes
+```
 
 ## Steps
 

@@ -546,7 +546,61 @@ Key configuration files are typically located at:
 
 ## Troubleshooting Setup
 
+### **Minikube Status Reference**
+
+Run `minikube status` before any lab to confirm your cluster state.
+
+**✅ Running — ready to use:**
+
+```
+minikube
+type: Control Plane
+host: Running
+kubelet: Running
+apiserver: Running
+kubeconfig: Configured
+```
+
+**⚠️ Stopped — cluster exists but needs to be started:**
+
+```
+minikube
+type: Control Plane
+host: Stopped
+kubelet: Stopped
+apiserver: Stopped
+kubeconfig: Stopped
+```
+
+Fix: `minikube start` (or `minikube start -p east` for the named cluster)
+
+**❌ Docker Desktop not running — minikube can't start without it:**
+
+```
+E0606 ...  status error: host: state: unknown state "minikube": docker container inspect minikube
+...
+failed to connect to the docker API at unix://...docker.sock; check if the path is correct
+and if the daemon is running: dial unix ...docker.sock: connect: no such file or directory
+```
+
+Fix: Open Docker Desktop from Applications and wait for it to fully start, then run `minikube start`.
+
+**❌ kubectl "connection refused" / openapi error:**
+
+```
+error: error validating "my-pod.yaml": error validating data: failed to download openapi:
+Get "https://127.0.0.1:XXXXX/openapi/v2?timeout=32s": dial tcp 127.0.0.1:XXXXX:
+connect: connection refused
+```
+
+> The `openapi` download is normal — `kubectl` always fetches the cluster schema to validate your YAML before applying. The real problem is `connection refused`, meaning the cluster isn't reachable.
+
+Fix: Start Docker Desktop → `minikube start` → retry your `kubectl` command.
+
+---
+
 ### **Minikube won't start**
+
 ```bash
 # Check if Docker is running
 docker ps
