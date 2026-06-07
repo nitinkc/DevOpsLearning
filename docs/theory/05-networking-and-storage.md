@@ -1,5 +1,7 @@
 # 05: Networking & Storage
 
+--8<-- "_abbreviations.md"
+
 ## Service Types & Networking
 
 ### **ClusterIP (Default)**
@@ -82,11 +84,81 @@ kubectl get svc api-service
 # EXTERNAL-IP will show cloud LB IP (after ~1 min)
 ```
 
+### Service Types - Deep Comparison
+
+| Type | Reachability | Typical Use | Pros | Trade-offs |
+|:-----|:-------------|:------------|:-----|:-----------|
+| `ClusterIP` | Inside cluster only | Internal microservice-to-microservice calls | Simple, secure default, no external exposure | Not directly reachable from your laptop/browser |
+| `NodePort` | `<node-ip>:nodePort` | Lab/dev access, quick external testing | Easy to expose without extra controller | Fixed port range (`30000-32767`), less flexible for production |
+| `LoadBalancer` | External IP/DNS | Production north-south traffic | Cloud-native external entry point | Requires cloud LB integration or local LB addon |
+
+### How Kubernetes Service Routing Actually Works
+
+When you call `http://api-service`, Kubernetes does not send traffic directly to a Pod IP by itself. Several components cooperate:
+
+- `CoreDNS` resolves `api-service.default.svc.cluster.local` to the Service `ClusterIP`.
+- `kube-proxy` programs node networking rules (iptables/IPVS) for that Service.
+- The packet is DNATed from `ClusterIP:port` to one Pod endpoint (`podIP:targetPort`).
+- Endpoint membership comes from `EndpointSlice` objects, which are built from label selectors and pod readiness.
+
+Because of this design:
+
+- Pods can restart and get new IPs without clients changing URLs.
+- Unready pods are removed from routing automatically.
+- Service names remain stable, while backends can change constantly.
+
+### Pod Network Model (Why Pod-to-Pod Works)
+
+Kubernetes follows a flat pod networking model:
+
+- Every Pod gets its own IP.
+- Every Pod can (by default) reach every other Pod IP.
+- No Pod-level NAT is required for pod-to-pod traffic.
+
+This is implemented by the CNI plugin (for Minikube commonly bridge + kube-proxy rules; in other clusters Calico/Cilium/Flannel, etc.).
+
+### Request Flow Examples
+
+#### 1) In-cluster call via ClusterIP
+
+`frontend-pod -> CoreDNS -> api-service(ClusterIP) -> kube-proxy rules -> api-pod`
+
+#### 2) External call via NodePort
+
+`curl from laptop -> nodeIP:30000 -> kube-proxy rules -> api-service -> api-pod`
+
+#### 3) External call via LoadBalancer
+
+`client -> external LB -> Service -> api-pod`
+
+In local Minikube-on-macOS Docker-driver setups, direct `nodeIP:nodePort` may not be reachable from host networking. `minikube service <name> --url` usually provides a reachable local URL.
+
 ---
 
 ## Ingress (HTTP Load Balancing)
 
 Route HTTP/HTTPS to different services based on hostname/path.
+
+### Ingress vs Service (Important Concept)
+
+- A `Service` (L4) forwards traffic to pods by IP/port.
+- An `Ingress` (L7) routes HTTP/HTTPS by host/path and then forwards to Services.
+
+In practice, you still need both:
+
+- Service exposes app internally.
+- Ingress gives one smart HTTP entrypoint for many Services.
+
+### Ingress Controller Requirement
+
+Ingress YAML alone does nothing unless an Ingress controller is running (Nginx, Traefik, HAProxy, etc.).
+
+Quick check:
+
+```bash
+kubectl get pods -A | grep -i ingress
+kubectl get ingress
+```
 
 ??? note "YAML example"
 
@@ -146,6 +218,98 @@ curl http://api-service  # From same namespace (short)
 curl http://api-service.default  # Specify namespace
 curl http://api-service.default.svc.cluster.local  # FQDN
 ```
+
+### DNS Resolution Path (Step-by-Step)
+
+1. App asks resolver for `api-service`.
+2. Pod `/etc/resolv.conf` search domains expand it (for example: `api-service.default.svc.cluster.local`).
+3. Query goes to `CoreDNS` Service (usually `kube-system`).
+4. CoreDNS returns Service `ClusterIP`.
+5. Client connects to that IP; kube-proxy handles backend pod selection.
+
+Useful checks:
+
+```bash
+# Check DNS service and pods
+kubectl -n kube-system get svc,pods | grep -E "kube-dns|coredns"
+
+# Launch a temporary debugging shell
+kubectl run dns-debug --image=busybox:1.36 --rm -it -- sh
+
+# Inside the pod
+nslookup api-service
+nslookup api-service.default.svc.cluster.local
+cat /etc/resolv.conf
+```
+
+### Common DNS and Discovery Mistakes
+
+- Wrong namespace in service name (`api-service.prod` vs `api-service.default`).
+- Service selector labels do not match pod labels.
+- Pods not Ready, so no endpoints are published.
+- NetworkPolicy blocks DNS egress to CoreDNS (`53/UDP` and sometimes `53/TCP`).
+
+---
+
+## Networking Troubleshooting Playbook
+
+Use this order to isolate issues quickly.
+
+### 1) Is the app healthy?
+
+```bash
+kubectl get pods -l app=api
+kubectl describe pod <pod-name>
+kubectl logs <pod-name>
+```
+
+### 2) Does Service select pods?
+
+```bash
+kubectl get svc api-service -o yaml
+kubectl get pods -l app=api --show-labels
+kubectl get endpoints api-service
+kubectl get endpointslices -l kubernetes.io/service-name=api-service
+```
+
+### 3) Is DNS resolving?
+
+```bash
+kubectl run net-debug --image=curlimages/curl --rm -it -- sh
+
+# Inside pod
+nslookup api-service
+curl -v http://api-service/health
+```
+
+### 4) Is network policy blocking traffic?
+
+```bash
+kubectl get networkpolicy -A
+kubectl describe networkpolicy <policy-name>
+```
+
+### 5) Is external entry path correct?
+
+```bash
+# NodePort
+kubectl get svc api-nodeport
+minikube service api-nodeport --url
+
+# Ingress
+kubectl get ingress
+kubectl describe ingress <ingress-name>
+```
+
+### Error Pattern -> Likely Cause
+
+| Symptom | Most likely cause |
+|:--------|:------------------|
+| `curl: (6) Could not resolve host` | DNS/CoreDNS issue or wrong service name |
+| `Connection refused` | App not listening on target port or container crash |
+| `Connection timed out` | Network path blocked (policy/firewall/driver networking) |
+| Service has `<none>` endpoints | Selector mismatch or pods not Ready |
+| Ingress exists but no routing | Ingress controller missing or wrong class |
 
 ---
 
