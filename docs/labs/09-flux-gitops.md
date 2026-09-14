@@ -15,6 +15,22 @@
 - Flux CLI installed
 - ~1.5 hours
 
+## Flux GitOps Architecture
+
+```mermaid
+graph LR
+    Git[(GitHub Config Repo)] -->|poll / webhook| Source[Flux Source Controller]
+    Source --> GitRepo[GitRepository]
+    GitRepo --> Kust[Flux Kustomize Controller]
+    GitRepo --> Helm[Flux Helm Controller]
+    Kust -->|apply| Cluster[(Kubernetes Cluster)]
+    Helm -->|reconcile| HR[HelmRelease]
+    HR -->|install / upgrade| Cluster
+    Cluster -->|drift detected| Helm
+    Helm -->|correct| Cluster
+    Notif[Flux Notification Controller] -->|events| Slack[(Slack / Alert Provider)]
+```
+
 ## Step 1: Install Flux
 
 ```bash

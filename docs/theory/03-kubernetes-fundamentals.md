@@ -30,7 +30,6 @@ With Kubernetes:
 
 ## Kubernetes Architecture
 
-
 ```mermaid
 graph TB
     A["Kubernetes Cluster"]
@@ -220,6 +219,65 @@ kubectl get pods -l app=api,version=v1
 
 ---
 
+## The Core Model
+
+**1. Every Pod gets its own real IP.** Not virtual, not NAT'd — a real IP that any other pod in the cluster can reach
+directly, no port mapping needed. This is the "**flat network**" model: it's a fundamental K8s requirement
+(implemented by whatever CNI plugin you're running — Calico, Cilium, GKE's own VPC-native networking, etc.).
+
+Contrast with Docker's default networking, where containers on different hosts can't reach each other
+directly — **K8s removes that problem entirely**.
+
+**2. Pod IPs are ephemeral.** Pods die and get rescheduled constantly (crashes, node drains, scaling).
+**A new Pod gets a new IP**. So you cannot hardcode a Pod IP anywhere — it'll break within hours.
+
+**3. That's the whole reason Services exist.** A Service is a stable, persistent address that sits in front of a
+shifting set of Pods, selected by label. The Service's IP (ClusterIP) **never changes** even as the Pods behind it
+come and go. This is a pure **abstraction layer** — nothing more.
+
+**4. How a Service actually routes traffic — `kube-proxy`.** Runs on every node. Watches the API server for
+Service and Endpoint changes, and writes `iptables` (or IPVS) rules on each node: "traffic destined for
+ClusterIP `X:port` → DNAT to one of these live Pod IPs, picked at random/round-robin."
+This is why the ClusterIP isn't on any real interface — it's purely rules, not a listener.
+
+**5. Service types — what actually differs is *where* that DNAT entry point is:**
+- **ClusterIP** (default): entry point only exists inside the cluster's iptables rules. Internal-only.
+- **NodePort**: same rules, *plus* a real open port on every node's actual interface (30000-32767 range). Now reachable from outside via `<node-IP>:<port>`.
+- **LoadBalancer**: cloud provider (GCP here) provisions a real external load balancer that targets the NodePorts across all nodes — so you get one stable external IP instead of having to know node IPs.
+- **ExternalName**: a DNS-level alias, no proxying at all — just a CNAME to something outside the cluster.
+
+**6. Service discovery by name, not IP — CoreDNS.** Every Service automatically gets a DNS name (`servicename.namespace.svc.cluster.local`). 
+CoreDNS runs as pods in the cluster and resolves that name to the ClusterIP. This is why you almost never hardcode IPs
+in K8s configs — you use the DNS name.
+
+**7. Ingress is a different layer entirely.** Services (above) operate at L4 (IP/port). 
+Ingress operates at L7 (HTTP) — hostname/path-based routing, TLS termination, one external entry point fanning out to 
+many Services. An Ingress *controller* (nginx-ingress, GKE's native one, etc.) is what actually implements this — Ingress 
+objects are just config; they don't do anything without a controller running.
+
+**8. NetworkPolicy = firewall rules inside the flat network.** By default, any Pod can talk to any Pod 
+(flat network, remember). NetworkPolicy objects restrict that — "only Pods with label X can reach Pods with label Y on 
+port Z." Without a NetworkPolicy, there's no isolation at all between Pods, even across namespaces.
+
+## 1. Service networking model
+
+Shows how both external traffic (Cloud LB → NodePort) and internal traffic (direct
+ClusterIP call) land on the same kube-proxy rules on a Node.
+
+```mermaid
+flowchart TD
+    A[Internet client] --> B[Cloud load balancer]
+    C[Pod - internal caller] -->|ClusterIP| E
+
+    subgraph Node
+        B -->|NodePort :3xxxx| E[kube-proxy<br/>rewrites traffic to pod IP]
+        E --> F[Pod A]
+        E --> G[Pod B]
+    end
+```
+
+---
+
 ## Pod Lifecycle
 
 ```mermaid
@@ -257,6 +315,38 @@ graph LR
 | **PersistentVolume** | Storage resource |
 | **PersistentVolumeClaim** | Request for storage |
 
+---
+
+## 2. Ingress request path
+
+End-to-end hop-by-hop path for a request to `api.yoursite.com` arriving via Ingress.
+
+```mermaid
+sequenceDiagram
+    participant Client as Internet client
+    participant DNS as DNS
+    participant LB as Cloud load balancer
+    participant IC as Ingress controller
+    participant SVC as Service (ClusterIP)
+    participant KP as kube-proxy (iptables/IPVS)
+    participant Pod as Pod
+
+    Client->>DNS: Resolve api.yoursite.com
+    DNS-->>Client: LB external IP
+    Client->>LB: HTTPS request
+    LB->>IC: Forward to Ingress controller (NodePort/LB-backed)
+    IC->>IC: Match host/path rule in Ingress object
+    IC->>SVC: Route to matched Service by name
+    SVC->>KP: Resolve ClusterIP via kube-proxy rules
+    KP->>Pod: DNAT to a live Pod IP:port
+    Pod-->>Client: Response (reverse path)
+```
+
+**Key point for the write-up:** Ingress operates at L7 (host/path routing, TLS
+termination) and hands off to a normal Service once it's picked a destination — from
+that point on it's the exact same ClusterIP/kube-proxy mechanism as the diagram above.
+The Ingress *object* is just config; nothing happens without an Ingress *controller*
+(nginx-ingress, GKE's native one, etc.) actually running and watching for it.
 ---
 
 ## Health Management

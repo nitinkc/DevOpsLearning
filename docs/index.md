@@ -75,3 +75,38 @@ A **practical, open-source, teachable** learning environment that takes you from
 **Want Theory?** → Read [Theory Modules](theory/01-devops-fundamentals.md)  
 **Ready to Code?** → Jump to [Lab 00](labs/00-environment-setup.md)  
 **Preparing for Interview?** → Check [Interview Prep](interview-prep.md)  
+
+
+## updated plan
+
+**Blog Angles by Week**
+
+| Week | Item | Angle |
+|---|---|---|
+| 1 | Real 3-node Standard GKE cluster (not Autopilot) | "What Autopilot hides from you" — node pool sizing, machine types, real `kubectl describe node` output |
+| 1 | GKE auth via Workload Identity vs static kubeconfig | Practical writeup of the auth model most tutorials skip |
+| 2 | Live HPA event under load (hey/k6) | Capture before/during/after pod counts + latency — hard to make interesting on a toy cluster, easy on real infra |
+| 2 | Helm chart templating decisions | "Every values.yaml choice, defended" — good technical-depth post |
+| 3 | Bad image tag pushed through GitLab CI pipeline | "Here's what actually breaks" — rollout failure + automatic rollback, the stuff generic tutorials skip |
+| 3 | GitLab CI → GKE deploy pipeline | Reconciliation model explained in your own words (Flux vs GitLab, same underlying idea) |
+| 4 | Cost observability — GCP billing export → Grafana panel | "I hooked up cost monitoring to my own dashboard" — not on the original plan, differentiated content |
+| 4 | Live diagnosis of a deliberately broken deployment | Real troubleshooting narrative, not a staged tutorial |
+
+Here's a project that threads every concept from your plan into one continuous build — not isolated labs, but a single app you keep extending, so each new concept has to interact with everything before it (the way it actually would in a real role).
+
+## Project: "Orders API" — a small service you ship through the full real-world path
+
+**The shape of it:** a tiny HTTP API (2-3 endpoints — could literally be `/orders`, `/orders/:id`, `/health`) that you deploy, expose, scale, break, fix, and monitor — on your real GKE cluster, through your real GitLab pipeline.
+
+| Stage | What you add | Concepts it forces you to actually use |
+|---|---|---|
+| 1 | Containerize it, deploy raw manifests to GKE | Docker, Pod, Deployment, ClusterIP Service |
+| 2 | Expose it properly | NodePort → LoadBalancer → Ingress w/ a real hostname, TLS |
+| 3 | Externalize config | ConfigMap + Secret (e.g. a fake DB connection string) |
+| 4 | Package it | Helm chart — templatize everything above |
+| 5 | Automate it | GitLab CI/CD pipeline: build → push to Artifact Registry → Helm deploy to GKE on every push |
+| 6 | Make it scale | Add a CPU-heavy endpoint, load-test it, watch HPA react in real time |
+| 7 | Make it observable | Prometheus scraping custom metrics, Grafana dashboard, alert rule |
+| 8 | Make it break (on purpose) | Bad image tag through the pipeline → failed rollout → automatic rollback |
+| 9 | Make it accountable | GCP billing export → cost panel in the same Grafana instance |
+| 10 | Prove you own it | Kill a pod mid-traffic, diagnose a deliberately misconfigured probe, explain the entire request path from your own memory |

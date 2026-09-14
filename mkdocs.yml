@@ -46,6 +46,7 @@ theme:
 plugins:
   - search:
       lang: en
+  - mkdocs_quiz
 
 markdown_extensions:
   - admonition
@@ -110,3 +111,4 @@ nav:
     - 10 Observability: labs/10-observability-monitoring.md
     - 11 Troubleshooting: labs/11-troubleshooting.md
   - Interview Prep: interview-prep.md
+  - Final Quiz: final-quiz.md
