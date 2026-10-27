@@ -25,7 +25,7 @@ kubectl cluster-info
 
 ### Step 1: Create Pod Manifest
 
-Create `api-pod.yaml`:
+Create `1-api-pod.yaml`:
 
 ??? note "api-pod.yaml"
 
@@ -67,7 +67,7 @@ Create `api-pod.yaml`:
 ### Step 2: Deploy Pod
 
 ```bash
-kubectl apply -f api-pod.yaml
+kubectl apply -f 1-api-pod.yaml
 
 # Verify creation
 kubectl get pods
@@ -139,7 +139,7 @@ curl http://localhost:8000/health
 Create multiple pods with different labels:
 
 ```bash
-kubectl apply -f api-pod.yaml
+kubectl apply -f 1-api-pod.yaml
 # Change metadata.name to api-pod-2, api-pod-3
 # Deploy 3 instances
 kubectl get pods -l app=api

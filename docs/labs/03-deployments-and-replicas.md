@@ -17,7 +17,7 @@
 
 ## Step 1: Create Deployment Manifest
 
-Create `api-deployment.yaml`:
+Create `2-api-deployment.yaml`:
 
 ??? note "api-deployment.yaml"
 
@@ -75,7 +75,7 @@ Create `api-deployment.yaml`:
 
 ```bash
 # Deploy
-kubectl apply -f api-deployment.yaml
+kubectl apply -f 2-api-deployment.yaml
 
 # brew install watch
 # Watch replicas being created (in another terminal)

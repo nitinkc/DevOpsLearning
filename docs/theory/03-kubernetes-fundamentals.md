@@ -350,6 +350,23 @@ The Ingress *object* is just config; nothing happens without an Ingress *control
 ---
 
 ## Health Management
+1. Liveness Probe (The "Are you alive?" check)
+   Purpose: Determines if your application is still running properly or if it is deadlocked, frozen, or in a broken state that requires a restart.
+
+What happens on failure: The orchestrator kills the container and restarts it.
+
+When to use: To catch unrecoverable states (e.g., a memory leak, a thread deadlock, or an infinite loop where the app stops responding).
+
+Analogy: Checking if a person has a pulse. If they don't, you perform CPR (restart).
+
+2. Readiness Probe (The "Are you ready for traffic?" check)
+   Purpose: Determines if your application is ready to accept incoming client requests and web traffic.
+
+What happens on failure: The orchestrator removes the container from the load balancer so no traffic is sent to it, but it does NOT restart it. Once the probe starts succeeding again, traffic is automatically routed back.
+
+When to use: During startup when an app needs time to load large caches, warm up connections, or run database migrations, or during heavy traffic spikes when it's temporarily overloaded.
+
+Analogy: Checking if a chef has finished setting up their station before letting hungry customers into the restaurant. You don't fire the chef if they aren't ready; you just hold the line at the door.
 
 ### **Liveness Probe**
 

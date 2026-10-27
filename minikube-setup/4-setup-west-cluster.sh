@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setup script for kind "west" cluster
-# Usage: ./setup-west-cluster.sh
+# Usage: ./4-setup-west-cluster.sh
 
 set -e
 

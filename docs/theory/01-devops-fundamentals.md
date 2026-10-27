@@ -52,7 +52,7 @@ DevOps Mindset:
 
 ## The DevOps Value Stream
 
-```
+```mermaid
 graph LR
     A["Developer<br/>Writes Code"] -->|Git Commit| B["CI Pipeline<br/>Build + Test"]
     B -->|Tests Pass| C["Build Artifact<br/>Docker Image"]

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Setup script for Minikube "east" cluster
-# Usage: ./setup-east-cluster.sh
+# Usage: ./3-setup-east-cluster.sh
 
 set -e
 

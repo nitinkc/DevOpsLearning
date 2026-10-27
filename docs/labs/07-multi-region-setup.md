@@ -21,10 +21,10 @@
 chmod +x ../minikube-setup/*.sh
 
 # Setup east cluster (Minikube)
-../minikube-setup/setup-east-cluster.sh
+../minikube-setup/3-setup-east-cluster.sh
 
 # Setup west cluster (kind)
-../minikube-setup/setup-west-cluster.sh
+../minikube-setup/4-setup-west-cluster.sh
 
 # Verify both running
 kubectl config get-contexts
@@ -93,7 +93,7 @@ kubectl get svc -n production
 
 ```bash
 # Setup networking config
-../minikube-setup/setup-networking.sh
+../minikube-setup/5-setup-networking.sh
 
 # This sets up routes so pods can reach across clusters
 # (May require sudo)
@@ -194,7 +194,7 @@ kubectl get deployment -n production --context=kind-west
 # Both should have myapp
 
 # Networking works
-# (If setup-networking.sh succeeded)
+# (If 5-setup-networking.sh succeeded)
 kubectl run test \
   --image=curlimages/curl \
   --context=east \

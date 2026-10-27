@@ -263,9 +263,9 @@ flux get helmreleases
 pip install -r requirements.txt
 
 # Start Minikube
-./minikube-setup/setup-east-cluster.sh
-./minikube-setup/setup-west-cluster.sh
-./minikube-setup/setup-networking.sh
+./minikube-setup/3-setup-east-cluster.sh
+./minikube-setup/4-setup-west-cluster.sh
+./minikube-setup/5-setup-networking.sh
 
 # Verify
 kubectl cluster-info

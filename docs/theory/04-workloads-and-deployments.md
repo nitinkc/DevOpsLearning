@@ -4,13 +4,13 @@
 
 Different K8s resources for different workload types:
 
-| Workload | Use Case | Example |
-|----------|----------|---------|
-| **Deployment** | Stateless app, scale replicas | Web API, frontend |
-| **StatefulSet** | Stateful app, stable identity | Database, message queue |
-| **DaemonSet** | Run on every node | Logging agent, monitoring |
-| **Job** | Run once to completion | Database migration, backup |
-| **CronJob** | Scheduled task | Cleanup job every night |
+| Workload        | Use Case                      | Example                    |
+|:----------------|:------------------------------|:---------------------------|
+| **Deployment**  | Stateless app, scale replicas | Web API, frontend          |
+| **StatefulSet** | Stateful app, stable identity | Database, message queue    |
+| **DaemonSet**   | Run on every node             | Logging agent, monitoring  |
+| **Job**         | Run once to completion        | Database migration, backup |
+| **CronJob**     | Scheduled task                | Cleanup job every night    |
 
 ---
 

@@ -35,7 +35,7 @@
 Deploy:
 
 ```bash
-kubectl apply -f api-service.yaml
+kubectl apply -f 3-api-service.yaml
 
 # Get service details
 kubectl get service api-service
@@ -85,7 +85,7 @@ exit  # Exit test pod
 Deploy:
 
 ```bash
-kubectl apply -f api-nodeport.yaml
+kubectl apply -f 4-api-nodeport.yaml
 
 # Get NodePort details
 kubectl get service api-nodeport

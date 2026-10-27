@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: api-pod
+  name: api-pod3
   labels:
     app: api
     environment: dev

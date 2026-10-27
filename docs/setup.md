@@ -16,10 +16,10 @@ We've provided a script to automate tool installation. Run it from the project r
 
 ```bash
 # macOS (Homebrew)
-./minikube-setup/install-dependencies.sh macos
+./minikube-setup/1-install-dependencies.sh macos
 
 # Linux
-./minikube-setup/install-dependencies.sh linux
+./minikube-setup/1-install-dependencies.sh linux
 ```
 
 **Note**: Docker Desktop/Engine requires manual installation from [https://www.docker.com/products/docker-desktop](https://www.docker.com/products/docker-desktop)
@@ -30,7 +30,7 @@ Verify all tools are installed:
 
 ```bash
 cd minikube-setup/
-./verify-setup.sh
+./2-verify-setup.sh
 ```
 
 This script checks: Docker, Minikube, kind, kubectl, Helm, Flux, Git.  
@@ -51,9 +51,9 @@ kubectl cluster-info
 cd minikube-setup/
 chmod +x *.sh
 
-./setup-east-cluster.sh      # Creates Minikube cluster "east"
-./setup-west-cluster.sh      # Creates kind cluster "west"  
-./setup-networking.sh        # Connects both clusters
+./3-setup-east-cluster.sh      # Creates Minikube cluster "east"
+./4-setup-west-cluster.sh      # Creates kind cluster "west"  
+./5-setup-networking.sh        # Connects both clusters
 
 # Verify
 kubectl get nodes --context=east
@@ -323,7 +323,12 @@ kind delete cluster --name west
 View your Minikube "east" cluster visually:
 
 ```bash
+minikube addons enable metrics-server
+minikube addons enable yakd          
+minikube service yakd-dashboard -n yakd-dashboard
+
 # Start the dashboard
+minikube dashboard
 minikube dashboard -p east
 
 # This opens: http://127.0.0.1:XXXXX

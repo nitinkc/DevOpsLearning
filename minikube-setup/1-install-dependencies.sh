@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # DevOps Learning Labs — Automated Dependency Installation
-# Usage: ./install-dependencies.sh [macos|linux]
+# Usage: ./1-install-dependencies.sh [macos|linux]
 
 set -e
 
